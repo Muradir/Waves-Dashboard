@@ -4,3 +4,5 @@ class TwitterUsers:
     bearerToken = 'AAAAAAAAAAAAAAAAAAAAALvmYwEAAAAAJPSM4F8E1IbwuSJHvThJMlXkJw8%3DbJCYq2JIWaEllT1CiUxdxgsYklmJUmIMwA44ai4Lgu3nQVGtn3'
     headers = {'Authorization' : 'Bearer ' + bearerToken}
     tableName = 'twitter_users'
+    tableAttributes = ['id', 'username']
+    dynamicValues = '%s, %s'

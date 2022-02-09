@@ -2,6 +2,8 @@
 import mysql.connector
 from mysql.connector import Error
 
+from waves_market_prices import WavesMarketPrices
+
 class Database:
 
     userName = 'u122k7mhfbxvt0rp'
@@ -40,19 +42,38 @@ class Database:
         print(records)
         Database.closeDatabaseConnection
 
-    def executeTruncateStatement(tableName):
-        connection = Database.getDatabaseConnection()
+    def executeTruncateStatement(tableName, cursor):
         truncateStatement = 'TRUNCATE TABLE ' + tableName
-        cursor = connection.cursor()
         cursor.execute(truncateStatement)
 
 
-    #def executeInsertStatement(tableName, data):
-    #    #db = cn.database
-    #        #insert_statement = """INSERT INTO twitter_users (userId, userName) VALUES (%s, %s)"""
-    #        ##new_records = 
-##
-    #        #if cn.is_connected():
+    def executeInsertStatement(tableName, data, tableAttributes, dynamicValues):
+        connection = Database.getDatabaseConnection()
+        cursor = connection.cursor()
+        Database.executeTruncateStatement(tableName, cursor)
+        
+
+        insertStatement = 'INSERT INTO ' + tableName + ' VALUES (' + dynamicValues + ');'
+        newRecords = []
+
+        for item in data:
+            if tableName == WavesMarketPrices.tableName:
+                item = item['data']
+            list = []
+            for attribute in tableAttributes:
+                if attribute == 'loadId':
+                    list.append(0)
+                else:
+                    list.append(item[attribute])
+            
+            newRecords.append(tuple(list))
+    
+        cursor.executemany(insertStatement, newRecords)
+        connection.commit()
+        print(cursor.rowcount)
+        Database.closeDatabaseConnection(cursor, connection)
+
+            #if cn.is_connected():
     #        #    print(cn.get_server_info())
     #        #    cs = cn.cursor()
     #        #    #cs.execute()
