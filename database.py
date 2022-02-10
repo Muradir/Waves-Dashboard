@@ -48,6 +48,7 @@ class Database:
 
 
     def executeInsertStatement(tableName, data, tableAttributes, dynamicValues):
+        print(dynamicValues)
         connection = Database.getDatabaseConnection()
         cursor = connection.cursor()
         Database.executeTruncateStatement(tableName, cursor)
