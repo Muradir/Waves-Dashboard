@@ -1,7 +1,10 @@
 #import modules
+from ntpath import join
 import mysql.connector
 from mysql.connector import Error
+from datetime import datetime, date
 
+#import classes
 from waves_market_prices import WavesMarketPrices
 
 class Database:
@@ -42,6 +45,7 @@ class Database:
         print(records)
         Database.closeDatabaseConnection
 
+
     def executeTruncateStatement(tableName):
         truncateStatement = 'TRUNCATE TABLE ' + tableName + ';'
 
@@ -51,31 +55,65 @@ class Database:
         Database.closeDatabaseConnection(cursor, connection)
 
 
+    def callLoadIdStoredProcedure(connection, procedureParameters):
+        connection = Database.getDatabaseConnection()
+        cursor = connection.cursor()
+        cursor.callproc('insert_loadid_control', procedureParameters)
+        connection.commit()
+
+        for result in cursor.stored_results():
+            loadId = result.fetchall()
+        print(loadId)
+        loadId = loadId[0][0]
+        print(loadId)
+
+        return loadId
+        #Database.closeDatabaseConnection(cursor, connection)
+
+
     def executeInsertStatement(tableName, data, tableAttributes, dynamicValues):
+
         #print(dynamicValues)
         connection = Database.getDatabaseConnection()
         cursor = connection.cursor()
         #Database.executeTruncateStatement(tableName, cursor)
+        loadId = Database.callLoadIdStoredProcedure(connection, [tableName, datetime.today()])
         
-
-        insertStatement = 'INSERT INTO ' + tableName + ' VALUES (' + dynamicValues + ');'
         newRecords = []
+        insertStatement = 'INSERT INTO ' + tableName + ' VALUES (' + dynamicValues + ');'
 
-        for item in data:
-            if tableName == WavesMarketPrices.tableName:
-                item = item['data']
-            list = []
+        if isinstance(data, list):
+            print('isList')
+            for item in data:
+                if tableName == WavesMarketPrices.tableName:
+                    item = item['data']
+                values = []
+                for attribute in tableAttributes:
+                    if attribute == 'loadId':
+                        values.append(loadId)
+                    elif attribute == 'date':
+                        values.append(date.today())
+                    else:
+                        values.append(item[attribute])
+                
+                newRecords.append(tuple(values))
+        
+            #cursor.executemany(insertStatement, newRecords)
+        else:
+            values = []
             for attribute in tableAttributes:
                 if attribute == 'loadId':
-                    list.append(0)
+                    values.append(loadId)
+                elif attribute == 'date':
+                    values.append(date.today().isoformat())
                 else:
-                    list.append(item[attribute])
+                    values.append(data[attribute])
             
-            newRecords.append(tuple(list))
-    
+            newRecords.append(values)
+        
+        print(newRecords)
         cursor.executemany(insertStatement, newRecords)
         connection.commit()
-        #print(cursor.rowcount)
         Database.closeDatabaseConnection(cursor, connection)
 
             #if cn.is_connected():
