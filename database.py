@@ -42,16 +42,20 @@ class Database:
         print(records)
         Database.closeDatabaseConnection
 
-    def executeTruncateStatement(tableName, cursor):
-        truncateStatement = 'TRUNCATE TABLE ' + tableName
+    def executeTruncateStatement(tableName):
+        truncateStatement = 'TRUNCATE TABLE ' + tableName + ';'
+
+        connection = Database.getDatabaseConnection()
+        cursor = connection.cursor()
         cursor.execute(truncateStatement)
+        Database.closeDatabaseConnection(cursor, connection)
 
 
     def executeInsertStatement(tableName, data, tableAttributes, dynamicValues):
-        print(dynamicValues)
+        #print(dynamicValues)
         connection = Database.getDatabaseConnection()
         cursor = connection.cursor()
-        Database.executeTruncateStatement(tableName, cursor)
+        #Database.executeTruncateStatement(tableName, cursor)
         
 
         insertStatement = 'INSERT INTO ' + tableName + ' VALUES (' + dynamicValues + ');'
@@ -71,7 +75,7 @@ class Database:
     
         cursor.executemany(insertStatement, newRecords)
         connection.commit()
-        print(cursor.rowcount)
+        #print(cursor.rowcount)
         Database.closeDatabaseConnection(cursor, connection)
 
             #if cn.is_connected():

@@ -3,6 +3,6 @@ import requests
 class ApiRequests:
 
     def getData(url, headers):
-        response = requests.get(url = url, headers = headers)
-        data = response.json()['data']
-        return data
+        return requests.get(url = url, headers = headers).json()
+        #data = response.json()
+        #return data
