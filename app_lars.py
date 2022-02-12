@@ -1,10 +1,7 @@
 #import modules
-from pickle import TRUE
 import emoji
 from datetime import datetime
-from market_treasury_yield import MarketTreasuryYield
-from twitter_sentiment_analysis import TwitterSentimentAnalysis
-from twitter_tweets_by_cashtag import TwitterTweetsByCashTag
+from dateutil.relativedelta import relativedelta
 
 #import classes
 from twitter_tweets_by_user import TwitterTweetsByUser
@@ -13,9 +10,9 @@ from api_requests import ApiRequests
 from database import Database
 from waves_apy import WavesApy
 from waves_market_prices import WavesMarketPrices
-
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
+from market_treasury_yield import MarketTreasuryYield
+from twitter_sentiment_analysis import TwitterSentimentAnalysis
+from twitter_tweets_by_cashtag import TwitterTweetsByCashTag
 
 
 
