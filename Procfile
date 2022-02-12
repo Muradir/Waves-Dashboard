@@ -1,1 +1,1 @@
-web:gunicorn main/app_lars.py.wsgi
+web:gunicorn app_lars:app_lars
