@@ -1,1 +1,1 @@
-web:gunicorn app_lars:app_lars
+web: bundle exec rails server -p $PORT
