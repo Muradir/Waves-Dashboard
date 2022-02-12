@@ -1,1 +1,1 @@
-web: gunicorn app_lars.py
+web:gunicorn app_lars.py
