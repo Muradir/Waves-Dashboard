@@ -1,1 +1,1 @@
-web: app_lars.py
+web: gunicorn gettingstarted.wsgi
