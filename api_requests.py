@@ -2,7 +2,8 @@ import requests
 
 class ApiRequests:
 
-    def getData(url, headers):
+    def getDataByGetRequest(url, headers):
         return requests.get(url = url, headers = headers).json()
-        #data = response.json()
-        #return data
+    
+    def getDataByPostRequest(url, body):
+        return requests.post(url=url, data=body).json()

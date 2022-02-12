@@ -1,4 +1,5 @@
 #import modules
+from json import load
 from ntpath import join
 import mysql.connector
 from mysql.connector import Error
@@ -38,12 +39,12 @@ class Database:
     
     def executeSelectQuery(tableName):
         connection = Database.getDatabaseConnection()
-        selectStatement = 'SELECT * FROM ' + tableName
+        selectStatement = 'SELECT * FROM ' + tableName + ';'
         cursor = connection.cursor()
         cursor.execute(selectStatement)
-        records = cursor.fetchmany(3)
-        print(records)
+        data = cursor.fetchall()
         Database.closeDatabaseConnection
+        return data
 
 
     def executeTruncateStatement(tableName):
@@ -55,7 +56,7 @@ class Database:
         Database.closeDatabaseConnection(cursor, connection)
 
 
-    def callLoadIdStoredProcedure(connection, procedureParameters):
+    def callLoadIdProcedure(procedureParameters):
         connection = Database.getDatabaseConnection()
         cursor = connection.cursor()
         cursor.callproc('insert_loadid_control', procedureParameters)
@@ -63,21 +64,30 @@ class Database:
 
         for result in cursor.stored_results():
             loadId = result.fetchall()
-        print(loadId)
         loadId = loadId[0][0]
-        print(loadId)
-
+        
+        Database.closeDatabaseConnection(cursor, connection)
+        
         return loadId
-        #Database.closeDatabaseConnection(cursor, connection)
 
 
-    def executeInsertStatement(tableName, data, tableAttributes, dynamicValues):
+    def callCoreProcessingProcedure(tableName, procedureName):
+        loadId = Database.callLoadIdProcedure([tableName, datetime.today()])
+
+        connection = Database.getDatabaseConnection()
+        cursor = connection.cursor()
+        cursor.callproc(procedureName, [loadId])
+        connection.commit()
+
+        Database.closeDatabaseConnection(cursor, connection)
+
+
+    def executeInsertStatement(tableName, data, loadId, tableAttributes, dynamicValues):
 
         #print(dynamicValues)
         connection = Database.getDatabaseConnection()
         cursor = connection.cursor()
         #Database.executeTruncateStatement(tableName, cursor)
-        loadId = Database.callLoadIdStoredProcedure(connection, [tableName, datetime.today()])
         
         newRecords = []
         insertStatement = 'INSERT INTO ' + tableName + ' VALUES (' + dynamicValues + ');'
@@ -85,14 +95,14 @@ class Database:
         if isinstance(data, list):
             print('isList')
             for item in data:
-                if tableName == WavesMarketPrices.tableName:
+                if tableName == 'stage_waves_market_prices':
                     item = item['data']
                 values = []
                 for attribute in tableAttributes:
-                    if attribute == 'loadId':
-                        values.append(loadId)
-                    elif attribute == 'date':
+                    if attribute == 'dateOfToday':
                         values.append(date.today())
+                    elif attribute == 'loadId':
+                        values.append(loadId)
                     else:
                         values.append(item[attribute])
                 
@@ -102,10 +112,10 @@ class Database:
         else:
             values = []
             for attribute in tableAttributes:
-                if attribute == 'loadId':
-                    values.append(loadId)
-                elif attribute == 'date':
+                if attribute == 'dateOfToday':
                     values.append(date.today().isoformat())
+                elif attribute == 'loadId':
+                    values.append(loadId)
                 else:
                     values.append(data[attribute])
             
