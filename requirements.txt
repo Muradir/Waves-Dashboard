@@ -1,6 +1,6 @@
 emoji
 datetime
-dateutil.relativedelta
+python-dateutil
 requests
 mysql.connector
 gunicorn
