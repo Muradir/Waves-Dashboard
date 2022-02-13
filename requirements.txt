@@ -8,3 +8,5 @@ dash
 pandas
 plotly
 pyodbc
+dash-bootstrap-components
+dash-bootstrap-templates
