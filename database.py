@@ -1,6 +1,4 @@
 #import modules
-from json import load
-from ntpath import join
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime, date
