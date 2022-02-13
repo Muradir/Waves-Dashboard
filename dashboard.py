@@ -4,24 +4,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-import pyodbc
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
 import threading, time
 from database import Database
 
-
-def connectSQLServer(driver, server, db, user, pw):
-    connSQLServer = pyodbc.connect(
-        r'DRIVER={' + driver + '};'
-        r'SERVER=' + server + ';'
-        r'DATABASE=' + db + ';'
-        r'UID=' + user + ';'
-        r'PWD=' + pw + ';'
-        r'Trusted_Connection=yes;',
-        autocommit=True
-    )
-    return connSQLServer 
 
 load_figure_template(["darkly"])
 
