@@ -19,7 +19,7 @@ app.layout = dbc.Container([
         html.H1("Finanzdashboard", style={'text-align': 'center'}),
         dcc.Interval(id='update_interval', interval=1*30000),
         html.Div([
-            html.H1("Waves - Dollar", style={'text-align': 'center'}),
+            html.H1("Waves - USD", style={'text-align': 'center'}),
             dcc.Graph(id='waves-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
             dcc.Graph(id='sharpe-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
                 ]),
