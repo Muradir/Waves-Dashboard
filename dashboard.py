@@ -21,7 +21,7 @@ app.layout = dbc.Container([
         html.Div([
             html.H1("Waves - Dollar", style={'text-align': 'center'}),
             dcc.Graph(id='waves-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
-            dcc.Graph(id='sharpe-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)')))
+            dcc.Graph(id='sharpe-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
                 ]),
         html.Div([
             dcc.Graph(id='sentiment-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),   
@@ -97,15 +97,15 @@ def generate_graph_sharpe(self):
 
     for row in rows:
         sharpeSQL.append(list(row))
-        labels = ['Woche', 'Datum','Sharpe-Ratio']
+        labels = ['Woche', 'Kalenderwoche','Sharpe-Ratio']
         dfsharpe = pd.DataFrame.from_records(sharpeSQL, columns=labels)
         dfsharpe['Sharpe-Ratio'] = dfsharpe['Sharpe-Ratio'].apply(pd.to_numeric)
 
-    sharpe = px.bar(dfsharpe, x='Datum', y='Sharpe-Ratio')
+    sharpe = px.bar(dfsharpe, x='Kalenderwoche', y='Sharpe-Ratio', template='plotly_dark', hover_data={'Kalenderwoche':False
+                                                                                           })
     sharpe.update_traces(marker_color='darkorange')
-    sharpe['data'][0]['showlegend']=True
+    sharpe['data'][0]['showlegend']=False
     sharpe.update_layout(xaxis_tickformat = '%W %Y', hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
-    sharpe.update_yaxes(title_text="Wert in USD",)
     sharpe.update_xaxes(title_text="Kalenderwoche",
         rangeslider_visible=True,
         rangeselector=dict(
