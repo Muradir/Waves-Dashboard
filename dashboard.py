@@ -85,7 +85,6 @@ def generate_graph_waves(self):
             bgcolor="dimgray"
         )
     )
-    print("Aktuelle Daten in die Datenbank gespeichert!") 
     return waves
 
 @app.callback(Output('sharpe-graph', 'figure'), 
@@ -94,28 +93,20 @@ def generate_graph_waves(self):
 def generate_graph_sharpe(self):
     sharpeSQL = [] #set an empty list
 
-    rows = Database.executeSelectQuery('vw_report_waves_market_prices')
+    rows = Database.executeSelectQuery('vw_report_sharpe_ratio_per_week')
 
     for row in rows:
         sharpeSQL.append(list(row))
-        labels = ['Wert','Datum']
+        labels = ['Woche', 'Datum','Sharpe-Ratio']
         dfsharpe = pd.DataFrame.from_records(sharpeSQL, columns=labels)
-        dfsharpe['Wert'] = dfsharpe['Wert'].apply(pd.to_numeric)
-        dfsharpe['Datum'] = dfsharpe['Datum'].apply(pd.to_datetime)
+        dfsharpe['Sharpe-Ratio'] = dfsharpe['Sharpe-Ratio'].apply(pd.to_numeric)
 
-    sharpe = make_subplots(specs=[[{"secondary_y": True}]])
-    sharpe.add_trace(go.Scatter(dfsharpe, x='Datum', y='Wert'),
-                    secondary_y=False,
-                    )
-    
+    sharpe = px.bar(dfsharpe, x='Datum', y='Sharpe-Ratio')
+    sharpe.update_traces(marker_color='darkorange')
     sharpe['data'][0]['showlegend']=True
-    sharpe['data'][0]['name']='APY'
-    sharpe['data'][0]['line']['color']="crimson"
-    sharpe.update_traces(mode="lines", hovertemplate=None)
-    sharpe.update_layout(hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
+    sharpe.update_layout(xaxis_tickformat = '%W %Y', hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
     sharpe.update_yaxes(title_text="Wert in USD",)
-    sharpe.update_yaxes
-    sharpe.update_xaxes(
+    sharpe.update_xaxes(title_text="Kalenderwoche",
         rangeslider_visible=True,
         rangeselector=dict(
             buttons=list([
@@ -136,8 +127,7 @@ def generate_graph_sharpe(self):
 def update_graph_sentiment(self):
     sentimentSQL = []
     rows = Database.executeSelectQuery('vw_report_twitter_sentiment_analysis')[0][0]
-    print(rows)
-    
+       
     sentiment = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0.2, 1]},
     value = rows,
