@@ -6,3 +6,4 @@ mysql.connector
 gunicorn
 dash
 pandas
+pyodbc
