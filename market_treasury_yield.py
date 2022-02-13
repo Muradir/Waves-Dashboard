@@ -18,8 +18,8 @@ class MarketTreasuryYield:
     def getHeaders(self):
         return self.__headers
 
-    def getDatabaseTableName(self, databaseLayer):
-        return databaseLayer + '_' + self.__databaseObjectName
+    def getDatabaseObjectName(self):
+        return self.__databaseObjectName
 
     def getDatabaseTableAttributes(self):
         return self.__databaseTableAttributes

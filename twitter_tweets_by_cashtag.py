@@ -22,8 +22,8 @@ class TwitterTweetsByCashTag:
     def getDataArrayName(self):
         return self.__dataArrayName
 
-    def getDatabaseTableName(self, databaseLayer):
-        return databaseLayer + '_' + self.__databaseObjectName
+    def getDatabaseObjectName(self):
+        return self.__databaseObjectName
 
     def getDatabaseTableAttributes(self):
         return self.__databaseTableAttributes

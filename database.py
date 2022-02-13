@@ -3,9 +3,6 @@ import mysql.connector
 from mysql.connector import Error
 from datetime import datetime, date
 
-#import classes
-from waves_market_prices import WavesMarketPrices
-
 class Database:
 
     __userName = 'u122k7mhfbxvt0rp'
@@ -36,12 +33,12 @@ class Database:
 
     
     def executeSelectQuery(self, tableName):
-        connection = Database.__getDatabaseConnection()
+        connection = self.__getDatabaseConnection()
         selectStatement = 'SELECT * FROM ' + tableName + ';'
         cursor = connection.cursor()
         cursor.execute(selectStatement)
         data = cursor.fetchall()
-        self.__closeDatabaseConnection()
+        self.__closeDatabaseConnection(cursor, connection)
         return data
 
 
@@ -81,7 +78,6 @@ class Database:
 
 
     def executeInsertStatement(self, tableName, data, loadId, tableAttributes, dynamicValues):
-        print('begin insert')
         connection = self.__getDatabaseConnection()
         cursor = connection.cursor()
         

@@ -16,44 +16,35 @@ from twitter_tweets_by_cashtag import TwitterTweetsByCashTag
 
 
 def main():
-    #db
+    #database attribute
     database = Database()
+
     #get timeStart for all time relative api requests
     timeStart = (datetime.today() - relativedelta(years=1)).date()
+
+    #call data load methods
+    loadTwitterSentimentAnalysisData(database=database)
+    print('start')
     loadTwitterTweetsByCashtag(database=database)
+    print(1)
     loadTwitterTweetsByUser(database=database)
+    print(2)
     loadMarketTreasuryYieldData(timeStart=timeStart, database=database)
+    print(3)
     loadWavesMarketPrices(timeStart=timeStart, database=database)
+    print(4)
     loadWavesApyData(database=database)
+    print(5)
 
 
-def getDatabaseObjectName(name, databaseLayer, isProcedure):
-    if isProcedure:
-        return 'load_core_' + name
-    else:
-        return databaseLayer + '_' + name
-
-
-#def loadData(classItem, timeStart, database):
-#    classInstance = classItem
-#    dataArrayName = classInstance.getDataArrayName()
-#    stageTableName = classInstance.getDatabaseTableName('stage')
-#    coreTableName = classInstance.getDatabaseTableName('core')
-#
-#    #get treasury yield data
-#    data = ApiRequests.getDataByGetRequest(url=classInstance.getBaseUrl(timeStart=str(timeStart)), headers=classInstance.getHeaders())[dataArrayName]
-#
-#    #database handling
-#    database.executeTruncateStatement(tableName=stageTableName)
-#    loadId = database.callLoadIdProcedure(procedureParameters=[stageTableName, datetime.today()])
-#    database.executeInsertStatement(tableName=stageTableName, data=data, loadId=loadId, tableAttributes=classInstance.getDatabaseTableAttributes(), dynamicValues=classInstance.getDynamicValues())
-#    database.callCoreProcessingProcedure(tableName=coreTableName, procedureName=classInstance.getDatabaseProcedureName())
+def getDatabaseTableName(databaseLayer, databaseObjectName):
+    return databaseLayer + '_' + databaseObjectName
 
 
 def loadMarketTreasuryYieldData(timeStart, database):
     marketTreasuryYield = MarketTreasuryYield()
-    stageTableName = marketTreasuryYield.getDatabaseTableName('stage')
-    coreTableName = marketTreasuryYield.getDatabaseTableName('core')
+    stageTableName = getDatabaseTableName('stage', marketTreasuryYield.getDatabaseObjectName())
+    coreTableName = getDatabaseTableName('core', marketTreasuryYield.getDatabaseObjectName())
 
     #get treasury yield data
     data = ApiRequests.getDataByGetRequest(url=marketTreasuryYield.getUrl(timeStart=str(timeStart)), headers=marketTreasuryYield.getHeaders())['observations']
@@ -67,8 +58,8 @@ def loadMarketTreasuryYieldData(timeStart, database):
 
 def loadWavesMarketPrices(timeStart, database):
     wavesMarketPrices = WavesMarketPrices()
-    stageTableName = wavesMarketPrices.getDatabaseTableName('stage')
-    coreTableName = wavesMarketPrices.getDatabaseTableName('core')
+    stageTableName = getDatabaseTableName('stage', wavesMarketPrices.getDatabaseObjectName())
+    coreTableName = getDatabaseTableName('core', wavesMarketPrices.getDatabaseObjectName())
 
     #get waves market price data
     data = ApiRequests.getDataByGetRequest(url=wavesMarketPrices.getUrl(timeStart=str(timeStart)), headers=wavesMarketPrices.getHeaders())['data']
@@ -79,10 +70,11 @@ def loadWavesMarketPrices(timeStart, database):
     database.executeInsertStatement(stageTableName, data=data, loadId=loadId, tableAttributes=wavesMarketPrices.getDatabaseTableAttributes(), dynamicValues=wavesMarketPrices.getDynamicValues())
     database.callCoreProcessingProcedure(tableName=coreTableName, procedureName=wavesMarketPrices.getDatabaseProcedureName())
 
+
 def loadWavesApyData(database):
     wavesApy = WavesApy()
-    stageTableName = wavesApy.getDatabaseTableName('stage')
-    coreTableName = wavesApy.getDatabaseTableName('core')
+    stageTableName = getDatabaseTableName('stage', wavesApy.getDatabaseObjectName())
+    coreTableName = getDatabaseTableName('core', wavesApy.getDatabaseObjectName())
 
     #get waves market price data
     data = ApiRequests.getDataByGetRequest(url=wavesApy.getUrl(), headers=wavesApy.getHeaders())[wavesApy.getDataArrayName()]
@@ -97,11 +89,11 @@ def loadWavesApyData(database):
 def loadTwitterTweetsByUser(database):
     twitterUsers = TwitterUsers()
     twitterTweetsByUser = TwitterTweetsByUser()
-    stageTableName = twitterTweetsByUser.getDatabaseTableName('stage')
-    coreTableName = twitterTweetsByUser.getDatabaseTableName('core')
+    stageTableName = getDatabaseTableName('stage', twitterTweetsByUser.getDatabaseObjectName())
+    coreTableName = getDatabaseTableName('core', twitterTweetsByUser.getDatabaseObjectName())
     
     #get twitter (waves)user data
-    twitterUserData = ApiRequests.getDataByGetRequest(url=twitterUsers.getUrl(), headers=twitterUsers.getHeaders())['data']
+    twitterUserData = ApiRequests.getDataByGetRequest(url=twitterUsers.getUrl(), headers=twitterUsers.getHeaders())[twitterUsers.getDataArrayName()]
     twitterUserIds = []
 
     for user in twitterUserData:
@@ -115,7 +107,7 @@ def loadTwitterTweetsByUser(database):
         urlPerUserId = twitterTweetsByUser.getUrl(str(userId) + '/tweets?tweet.fields=author_id,created_at&start_time=2021-01-01T00:00:00.000Z&max_results=100')
 
         response = ApiRequests.getDataByGetRequest(url=urlPerUserId, headers=twitterTweetsByUser.getHeaders())
-        data = response['data']
+        data = response[twitterTweetsByUser.getDataArrayName()]
         nextToken = response['meta']['next_token']
     
         while (nextToken != None):
@@ -126,7 +118,7 @@ def loadTwitterTweetsByUser(database):
             response = ApiRequests.getDataByGetRequest(url=urlPerUserId + '&pagination_token=' + nextToken, headers=twitterTweetsByUser.getHeaders())
             
             if len(response['meta']) == 5:
-                data = response['data']
+                data = response[twitterTweetsByUser.getDataArrayName()]
                 nextToken = response['meta']['next_token']
             else:
                 nextToken = None
@@ -136,8 +128,8 @@ def loadTwitterTweetsByUser(database):
 
 def loadTwitterTweetsByCashtag(database):
     twitterTweetsByCashtag = TwitterTweetsByCashTag()
-    stageTableName = twitterTweetsByCashtag.getDatabaseTableName('stage')
-    coreTableName = twitterTweetsByCashtag.getDatabaseTableName('core')
+    stageTableName = getDatabaseTableName('stage', twitterTweetsByCashtag.getDatabaseObjectName())
+    coreTableName = getDatabaseTableName('core', twitterTweetsByCashtag.getDatabaseObjectName())
 
     #get twitter tweets by cashtag
     response = ApiRequests.getDataByGetRequest(url=twitterTweetsByCashtag.getBaseUrl() + twitterTweetsByCashtag.getInitialRelativeUrl(), headers=twitterTweetsByCashtag.getHeaders())
@@ -166,13 +158,13 @@ def loadTwitterTweetsByCashtag(database):
 
 def loadTwitterSentimentAnalysisData(database):
     twitterSentimentAnalysis = TwitterSentimentAnalysis()
-    stageTableName = twitterSentimentAnalysis.getDatabaseTableName('stage')
-    coreTableName = twitterSentimentAnalysis.getDatabaseTableName('core')
+    stageTableName = getDatabaseTableName('stage', twitterSentimentAnalysis.getDatabaseObjectName())
+    coreTableName = getDatabaseTableName('core', twitterSentimentAnalysis.getDatabaseObjectName())
 
     #get data of tweet sentiment analysis
     database.executeTruncateStatement(stageTableName)
-    loadId = database.callLoadIdStoredProcedure([stageTableName, datetime.today()])
-    tweets = database.executeSelectQuery(tableName='report_twitter_tweets')
+    loadId = database.callLoadIdProcedure([stageTableName, datetime.today()])
+    tweets = database.executeSelectQuery(tableName='vw_report_twitter_tweets')
     
     newRecords = []
     for tweet in tweets:
@@ -181,84 +173,12 @@ def loadTwitterSentimentAnalysisData(database):
         data['tweetId'] = tweet[0]
         data['neg'] = scores['neg']
         data['pos'] = scores['pos']
-        data['loadId'] = loadId
+        #data['loadId'] = loadId
         newRecords.append(data)
 
-    database.executeInsertStatement(stageTableName, newRecords, twitterSentimentAnalysis.getDatabaseTableAttributes(), twitterSentimentAnalysis.getDynamicValues())
+    database.executeInsertStatement(tableName=stageTableName, data=newRecords, loadId=loadId, tableAttributes=twitterSentimentAnalysis.getDatabaseTableAttributes(), dynamicValues=twitterSentimentAnalysis.getDynamicValues())
     database.callCoreProcessingProcedure(tableName=coreTableName, procedureName=twitterSentimentAnalysis.getDatabaseProcedureName())
 
 
 if __name__ == "__main__":
     main()
-
-    #get twitter user data
-    #data = ApiRequests.getData(url=TwitterUsers.url, headers=TwitterUsers.headers)['data']
-    #Database.executeTruncateStatement(TwitterUsers.tableName)
-    #Database.executeInsertStatement(TwitterUsers.tableName, data, TwitterUsers.tableAttributes, TwitterUsers.dynamicValues)
-
-    ###get waves apy data
-    #data = ApiRequests.getData(url=WavesApy.url, headers=WavesApy.headers)['usdn-apy']
-    #Database.executeTruncateStatement(WavesApy.tableName)
-    #Database.executeInsertStatement(WavesApy.tableName, data, WavesApy.tableAttributes, WavesApy.dynamicValues)
-    #
-    ##get twitter tweets by user
-    #Database.executeTruncateStatement(tableName=TwitterTweetsByUser.tableName)
-    #twitterUserData = ApiRequests.getData(url=TwitterUsers.baseUrl, headers=TwitterUsers.headers)['data']
-    #twitterUserIds = []
-    #for user in twitterUserData:
-    #    twitterUserIds.append(user['id'])
-    #
-    #for userId in twitterUserIds:
-    #    baseUrlPerUserId = TwitterTweetsByUser.url + userId + '/tweets?tweet.fields=author_id,created_at&start_time=2021-01-01T00:00:00.000Z&max_results=100'
-    #    print(baseUrlPerUserId)
-    #    response = ApiRequests.getData(url=baseUrlPerUserId, headers=TwitterTweetsByUser.headers)
-    #    data = response['data']
-    #    nextToken = response['meta']['next_token']
-    #
-    #    while (nextToken != None):
-    #        for d in data:
-    #            d['text'] = emoji.demojize(d['text'])
-    #            
-    #        Database.executeInsertStatement(TwitterTweetsByUser.tableName, data, TwitterTweetsByUser.tableAttributes, TwitterTweetsByUser.dynamicValues)
-    #        response = ApiRequests.getData(url=baseUrlPerUserId + '&pagination_token=' + nextToken, headers=TwitterTweetsByUser.headers)
-    #        if len(response['meta']) == 5:
-    #            data = response['data']
-    #            nextToken = response['meta']['next_token']
-    #        else:
-    #            nextToken = None
-    #
-    ##get twitter tweets by cashtag
-    #response = ApiRequests.getData(url=TwitterTweetsByCashTag.baseUrl + TwitterTweetsByCashTag.initialRelativeUrl, headers=TwitterTweetsByCashTag.headers)
-    #data = response['statuses']
-    #nextRelativeUrl = response['search_metadata']['next_results']
-    #
-    #while (nextRelativeUrl != None):
-    #    for d in data:
-    #        d['text'] = emoji.demojize(d['text'])
-    #        d['author_id'] = d['user']['id']
-    #
-    #    Database.executeInsertStatement(TwitterTweetsByCashTag.tableName, data, TwitterTweetsByCashTag.tableAttributes, TwitterTweetsByCashTag.dynamicValues)
-    #    response = ApiRequests.getData(url=TwitterTweetsByCashTag.baseUrl + nextRelativeUrl, headers=TwitterTweetsByCashTag.headers)
-    # 
-    #    if len(response['search_metadata']) == 9:
-    #        data = response['statuses']
-    #        nextRelativeUrl = response['search_metadata']['next_results']
-    #    else:
-    #        nextRelativeUrl = None
-
-    #get data of tweet sentiment analysis
-    #Database.executeTruncateStatement(TwitterSentimentAnalysis.tableName)
-    #loadId = Database.callLoadIdStoredProcedure([TwitterSentimentAnalysis.tableName, datetime.today()])
-    #tweets = Database.executeSelectQuery(tableName='report_twitter_tweets')
-    #
-    #newRecords = []
-    #for tweet in tweets:
-    #    data = ApiRequests.getDataByPostRequest(url=TwitterSentimentAnalysis.url, body={'text' : tweet[1]})
-    #    scores = data['probability']
-    #    data['tweetId'] = tweet[0]
-    #    data['neg'] = scores['neg']
-    #    data['pos'] = scores['pos']
-    #    data['loadId'] = loadId
-    #    newRecords.append(data)
-    #    print(len(newRecords))
-    #Database.executeInsertStatement(TwitterSentimentAnalysis.tableName, newRecords, TwitterSentimentAnalysis.tableAttributes, TwitterSentimentAnalysis.dynamicValues)
