@@ -37,7 +37,7 @@ def generate_graph_waves(self):
       
     wavesSQL = [] #set an empty list
     
-    rows = Database.executeSelectQuery('vw_report_waves_market_prices')
+    rows = Database().executeSelectQuery(tableName = 'vw_report_waves_market_prices')
     for row in rows:
         wavesSQL.append(list(row))
         labels = ['Datum','Wert']
@@ -91,7 +91,7 @@ def generate_graph_waves(self):
 def generate_graph_sharpe(self):
     sharpeSQL = [] #set an empty list
 
-    rows = Database.executeSelectQuery('vw_report_sharpe_ratio_per_week')
+    rows = Database().executeSelectQuery(tableName = 'vw_report_sharpe_ratio_per_week')
 
     for row in rows:
         sharpeSQL.append(list(row))
@@ -123,7 +123,7 @@ def generate_graph_sharpe(self):
 
 def generate_graph_apy(self):
     apySQL = []
-    rows = Database.executeSelectQuery('vw_report_waves_apy')
+    rows = Database().executeSelectQuery(tableName = 'vw_report_waves_apy')
     records = []
     timeframes = [1, 3, 7, 30, 60]
     for i in range(0, len(timeframes)):
@@ -146,7 +146,7 @@ def generate_graph_apy(self):
         [Input('update_interval', 'interval')])
 
 def generate_graph_sentiment(self):
-    rows = Database.executeSelectQuery('vw_report_twitter_sentiment_analysis')[0][0]
+    rows = Database().executeSelectQuery(tableName = 'vw_report_twitter_sentiment_analysis')[0][0]
        
     sentiment = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0.2, 1]},
