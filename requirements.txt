@@ -6,5 +6,5 @@ mysql.connector
 gunicorn
 dash
 pandas
+plotly
 pyodbc
-
