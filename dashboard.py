@@ -24,11 +24,9 @@ app.layout = dbc.Container([
             dcc.Graph(id='sharpe-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
                 ]),
         html.Div([
-            dcc.Graph(id='sentiment-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),   
-        ]),
-        html.Div([
-
-        ])    
+            dcc.Graph(id='apy', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
+            dcc.Graph(id='sentiment-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),        
+        ]),   
     ])    
 ])
 
@@ -101,8 +99,7 @@ def generate_graph_sharpe(self):
         dfsharpe = pd.DataFrame.from_records(sharpeSQL, columns=labels)
         dfsharpe['Sharpe-Ratio'] = dfsharpe['Sharpe-Ratio'].apply(pd.to_numeric)
 
-    sharpe = px.bar(dfsharpe, x='Kalenderwoche', y='Sharpe-Ratio', template='plotly_dark', hover_data={'Kalenderwoche':False
-                                                                                           })
+    sharpe = px.bar(dfsharpe, x='Kalenderwoche', y='Sharpe-Ratio', template='plotly_dark', hover_data={'Kalenderwoche':False})
     sharpe.update_traces(marker_color='darkorange')
     sharpe['data'][0]['showlegend']=False
     sharpe.update_layout(xaxis_tickformat = '%W %Y', hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
@@ -121,11 +118,34 @@ def generate_graph_sharpe(self):
     )
     return sharpe
 
+@app.callback(Output('apy', 'figure'), 
+    [Input('update_interval', 'interval')])
+
+def generate_graph_apy(self):
+    apySQL = []
+    rows = Database.executeSelectQuery('vw_report_waves_apy')
+    records = []
+    timeframes = [1, 3, 7, 30, 60]
+    for i in range(0, len(timeframes)):
+        records.append((timeframes[i], rows[0][i]))
+
+    for row in records:
+        apySQL.append(list(row))
+        labels = ['Zeitraum in Tagen', 'APY']
+        dfapy = pd.DataFrame.from_records(apySQL, columns=labels)
+        dfapy['APY'] = dfapy['APY'].apply(pd.to_numeric)
+       
+    apy = px.bar(dfapy, x='Zeitraum in Tagen', y='APY', template='plotly_dark')
+    apy.update_layout(plot_bgcolor='rgba(90, 90, 90, 90)',paper_bgcolor='rgba(50, 50, 50, 50)')
+    apy.update_traces(marker_color='crimson')
+    apy.update_xaxes(type='category')
+
+    return apy
+
 @app.callback(Output('sentiment-graph', 'figure'), 
         [Input('update_interval', 'interval')])
 
-def update_graph_sentiment(self):
-    sentimentSQL = []
+def generate_graph_sentiment(self):
     rows = Database.executeSelectQuery('vw_report_twitter_sentiment_analysis')[0][0]
        
     sentiment = go.Figure(go.Indicator(
