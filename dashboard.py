@@ -4,11 +4,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-from collections import deque
 import pyodbc
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
+import mysql.connector
 import threading, time
+
+
 
 def connectSQLServer(driver, server, db, user, pw):
     connSQLServer = pyodbc.connect(
@@ -23,13 +25,13 @@ def connectSQLServer(driver, server, db, user, pw):
     return connSQLServer 
 
 load_figure_template(["darkly"])
-  
+
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 app.layout = dbc.Container([
     html.Div(children=[
         html.H1("Finanzdashboard", style={'text-align': 'center'}),
-        dcc.Interval(id='update_interval', interval=1*3600),
+        dcc.Interval(id='update_interval', interval=1*30000),
         html.Div([
             html.H1("Waves - Dollar", style={'text-align': 'center'}),
             dcc.Graph(id='waves-graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
@@ -48,7 +50,7 @@ app.layout = dbc.Container([
             [Input('update_interval', 'interval')])
 
 def generate_graph_waves(self):
-
+      
     wavesSQL = [] #set an empty list
 
     sql_conn = connectSQLServer('MySQL ODBC 8.0 ANSI Driver', 'bp1o15l1iwoajeyerhf6-mysql.services.clever-cloud.com:3306', 'bp1o15l1iwoajeyerhf6', 'u122k7mhfbxvt0rp', 'sYLq0OQvnWYw8Lv56bB6') 
@@ -64,8 +66,6 @@ def generate_graph_waves(self):
     cursor.close
     sql_conn.close
 
-
-
     waves = px.scatter(dfwaves, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=10), trendline_color_override="crimson", template='plotly_dark') 
     waves_ma20 = px.scatter(dfwaves, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=20),  template='plotly_dark')
     x_ma20 = waves_ma20["data"][1]['x']
@@ -79,7 +79,6 @@ def generate_graph_waves(self):
     x_ma100 = waves_ma100["data"][1]['x']
     y_ma100 = waves_ma100["data"][1]['y']
     waves.add_trace(go.Line(x=x_ma100, y=y_ma100))
-
 
     waves['data'][0]['showlegend']=True
     waves['data'][1]['showlegend']=True
@@ -105,6 +104,7 @@ def generate_graph_waves(self):
             bgcolor="dimgray"
         )
     )
+    print("Aktuelle Daten in die Datenbank gespeichert!") 
     return waves
 
 @app.callback(Output('sharpe-graph', 'figure'), 
@@ -132,7 +132,7 @@ def generate_graph_sharpe(self):
                     )
     
     sharpe['data'][0]['showlegend']=True
-    sharpe['data'][0]['name']='Zinsen (7d)'
+    sharpe['data'][0]['name']='APY'
     sharpe['data'][0]['line']['color']="crimson"
     sharpe.update_traces(mode="lines", hovertemplate=None)
     sharpe.update_layout(hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
@@ -169,19 +169,18 @@ def update_graph_sentiment(self):
     sentiment = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0.2, 1]},
     value = rows,
-    mode = "gauge",
+    mode = "gauge+number",
     title = {'text': "Stimmung"},
     gauge = {'axis': {'range': [None, 10]},
              'bar': {'color': "gainsboro"},
              'steps' : [
-                {'range': [0, 3], 'color': "tomato"},
-                {'range': [3, 7], 'color': "slategrey"},
+                {'range': [0, 3], 'color': "crimson"},
+                {'range': [3, 7], 'color': "#ffb650"},
                 {'range': [7, 10], 'color': "seagreen"}],
              }))
     sentiment.update_layout(plot_bgcolor='rgba(90, 90, 90, 90)',paper_bgcolor='rgba(50, 50, 50, 50)')
 
     return sentiment
-
 
 if __name__ == "__main__":
     app.run_server(debug=True)
