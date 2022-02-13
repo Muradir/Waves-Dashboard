@@ -20,21 +20,22 @@ def main():
     database = Database()
 
     #get timeStart for all time relative api requests
-    timeStart = (datetime.today() - relativedelta(years=1)).date()
+    timeStart = (datetime.today() - relativedelta(year=1)).date()
 
     #call data load methods
-    loadTwitterSentimentAnalysisData(database=database)
     print('start')
     loadTwitterTweetsByCashtag(database=database)
     print(1)
-    loadTwitterTweetsByUser(database=database)
+    loadTwitterTweetsByUser(timeStart=timeStart, database=database)
     print(2)
-    loadMarketTreasuryYieldData(timeStart=timeStart, database=database)
+    loadTwitterSentimentAnalysisData(database=database)
     print(3)
-    loadWavesMarketPrices(timeStart=timeStart, database=database)
+    loadMarketTreasuryYieldData(timeStart=timeStart, database=database)
     print(4)
-    loadWavesApyData(database=database)
+    loadWavesMarketPrices(timeStart=timeStart, database=database)
     print(5)
+    loadWavesApyData(database=database)
+    print(6)
 
 
 def getDatabaseTableName(databaseLayer, databaseObjectName):
@@ -86,7 +87,7 @@ def loadWavesApyData(database):
     database.callCoreProcessingProcedure(tableName=coreTableName, procedureName=wavesApy.getDatabaseProcedureName())
 
 
-def loadTwitterTweetsByUser(database):
+def loadTwitterTweetsByUser(timeStart, database):
     twitterUsers = TwitterUsers()
     twitterTweetsByUser = TwitterTweetsByUser()
     stageTableName = getDatabaseTableName('stage', twitterTweetsByUser.getDatabaseObjectName())
@@ -104,7 +105,7 @@ def loadTwitterTweetsByUser(database):
 
     #get twitter tweets by user
     for userId in twitterUserIds:
-        urlPerUserId = twitterTweetsByUser.getUrl(str(userId) + '/tweets?tweet.fields=author_id,created_at&start_time=2021-01-01T00:00:00.000Z&max_results=100')
+        urlPerUserId = twitterTweetsByUser.getUrl(str(userId) + '/tweets?tweet.fields=author_id,created_at&max_results=100&start_time=2021-01-01T00:00:00.000Z')
 
         response = ApiRequests.getDataByGetRequest(url=urlPerUserId, headers=twitterTweetsByUser.getHeaders())
         data = response[twitterTweetsByUser.getDataArrayName()]
