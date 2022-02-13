@@ -1,10 +1,10 @@
 numpy
+gunicorn
 emoji
 datetime
 python-dateutil
 requests
 mysql.connector
-gunicorn
 dash
 pandas
 plotly

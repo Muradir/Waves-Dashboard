@@ -6,13 +6,13 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
-import threading, time
 from database import Database
 
 
 load_figure_template(["darkly"])
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+server = app.server
 
 app.layout = dbc.Container([
     html.Div(children=[
