@@ -5,3 +5,4 @@ requests
 mysql.connector
 gunicorn
 dash
+pandas
