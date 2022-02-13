@@ -7,5 +7,4 @@ gunicorn
 dash
 pandas
 pyodbc
-threading
-time
+
