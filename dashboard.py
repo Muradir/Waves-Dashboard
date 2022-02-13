@@ -7,9 +7,8 @@ import pandas as pd
 import pyodbc
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
-import mysql.connector
 import threading, time
-
+from database import Database
 
 
 def connectSQLServer(driver, server, db, user, pw):
@@ -52,19 +51,14 @@ app.layout = dbc.Container([
 def generate_graph_waves(self):
       
     wavesSQL = [] #set an empty list
-
-    sql_conn = connectSQLServer('MySQL ODBC 8.0 ANSI Driver', 'bp1o15l1iwoajeyerhf6-mysql.services.clever-cloud.com:3306', 'bp1o15l1iwoajeyerhf6', 'u122k7mhfbxvt0rp', 'sYLq0OQvnWYw8Lv56bB6') 
-    cursor = sql_conn.cursor()
-    cursor.execute("SELECT weightedAveragePrice, date FROM vw_report_waves_market_prices")
-    rows = cursor.fetchall()
+    
+    rows = Database.executeSelectQuery('vw_report_waves_market_prices')
     for row in rows:
         wavesSQL.append(list(row))
-        labels = ['Wert','Datum']
+        labels = ['Datum','Wert']
         dfwaves = pd.DataFrame.from_records(wavesSQL, columns=labels)
         dfwaves['Wert'] = dfwaves['Wert'].apply(pd.to_numeric)
         dfwaves['Datum'] = dfwaves['Datum'].apply(pd.to_datetime)
-    cursor.close
-    sql_conn.close
 
     waves = px.scatter(dfwaves, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=10), trendline_color_override="crimson", template='plotly_dark') 
     waves_ma20 = px.scatter(dfwaves, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=20),  template='plotly_dark')
@@ -113,18 +107,14 @@ def generate_graph_waves(self):
 def generate_graph_sharpe(self):
     sharpeSQL = [] #set an empty list
 
-    sql_conn = connectSQLServer('MySQL ODBC 8.0 ANSI Driver', 'bp1o15l1iwoajeyerhf6-mysql.services.clever-cloud.com:3306', 'bp1o15l1iwoajeyerhf6', 'u122k7mhfbxvt0rp', 'sYLq0OQvnWYw8Lv56bB6') 
-    cursor = sql_conn.cursor()
-    cursor.execute("SELECT value, date FROM vw_core_market_treasury_yield")
-    rows = cursor.fetchall()
+    rows = Database.executeSelectQuery('vw_report_waves_market_prices')
+
     for row in rows:
         sharpeSQL.append(list(row))
         labels = ['Wert','Datum']
         dfsharpe = pd.DataFrame.from_records(sharpeSQL, columns=labels)
         dfsharpe['Wert'] = dfsharpe['Wert'].apply(pd.to_numeric)
         dfsharpe['Datum'] = dfsharpe['Datum'].apply(pd.to_datetime)
-    cursor.close
-    sql_conn.close
 
     sharpe = make_subplots(specs=[[{"secondary_y": True}]])
     sharpe.add_trace(go.Scatter(dfsharpe, x='Datum', y='Wert'),
@@ -158,14 +148,9 @@ def generate_graph_sharpe(self):
 
 def update_graph_sentiment(self):
     sentimentSQL = []
-
-    sql_conn = connectSQLServer('MySQL ODBC 8.0 ANSI Driver', 'bp1o15l1iwoajeyerhf6-mysql.services.clever-cloud.com:3306', 'bp1o15l1iwoajeyerhf6', 'u122k7mhfbxvt0rp', 'sYLq0OQvnWYw8Lv56bB6') 
-    cursor = sql_conn.cursor()
-    cursor.execute("SELECT sentimentAnalysisScore FROM vw_report_twitter_sentiment_analysis")
-    rows = cursor.fetchval()
-    cursor.close
-    sql_conn.close
-
+    rows = Database.executeSelectQuery('vw_report_twitter_sentiment_analysis')[0][0]
+    print(rows)
+    
     sentiment = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0.2, 1]},
     value = rows,
