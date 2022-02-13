@@ -11,3 +11,7 @@ dash-bootstrap-components
 dash-bootstrap-templates
 pyodbc
 mysql-connector-python
+unixodbc
+unixodbc-dev
+python-pyodbc
+libsqliteodbc
