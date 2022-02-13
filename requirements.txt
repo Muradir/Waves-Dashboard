@@ -9,6 +9,3 @@ pandas
 plotly
 dash-bootstrap-components
 dash-bootstrap-templates
-pyodbc
-mysql-connector-python
-mysqlclient
