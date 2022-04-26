@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
-from database import Database
+from database_depr import Database
 
 
 load_figure_template(["darkly"])

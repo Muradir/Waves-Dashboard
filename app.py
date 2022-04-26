@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from twitter_tweets_by_user import TwitterTweetsByUser
 from twitter_users import TwitterUsers
 from api_requests import ApiRequests
-from database import Database
+from database_depr import Database
 from waves_apy import WavesApy
 from waves_market_prices import WavesMarketPrices
 from market_treasury_yield import MarketTreasuryYield

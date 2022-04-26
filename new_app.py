@@ -3,7 +3,7 @@
 #import internal classes
 from mysqlx import InsertStatement
 from api_requests import ApiRequests
-from new_database import Database
+from database import Database
 from new_wavescap_waves_marketprices import WavesMarketPrices
 
 #import external modules
@@ -40,7 +40,7 @@ def getMarketPricesData(database):
     
     print(recordsToInsert)
 
-    database.executeInsertStatement(tableName=wavesMarketPrices.getTableName(), data=recordsToInsert, insertStatement=wavesMarketPrices.getInsertStatement())
+    database.executeInsertStatement(tableName=wavesMarketPrices.getTableName(), tableAttributes=wavesMarketPrices.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=wavesMarketPrices.getDynamicInsertPlaceholders())
 
 def getMarketPrData(database):
     url_waves_to_bitcoin = "https://wavescap.com/api/chart/pair/WAVES-8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS-all.json"

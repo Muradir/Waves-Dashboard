@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime
 
 #import classes
-from database import Database
+from database_depr import Database
 
 class TestDatabase(unittest.TestCase):
 
