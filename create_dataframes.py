@@ -1,12 +1,5 @@
-from dash import Dash, html, dcc
-from dash.dependencies import Output, Input
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import pandas as pd
-import dash_bootstrap_components as dbc
-from dash_bootstrap_templates import load_figure_template
-from database import Database
+from database_depr import Database
 
 wavesSQL = [] #set an empty list
     
@@ -19,8 +12,6 @@ for row in rows:
     dfwaves['Datum'] = dfwaves['Datum'].apply(pd.to_datetime)
 
 dfwaves.to_pickle("./DataFrames/dfwaves")
-
-
 
 sharpeSQL = [] #set an empty list
 
