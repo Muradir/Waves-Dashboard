@@ -34,14 +34,14 @@ class Database:
             connection.close()
 
 
-    def executeInsertStatement(self, tableName, data):
+    def executeInsertStatement(self, tableName, data, insertStatement):
 
         self.__executeTruncateStatement(tableName=tableName)
         connection = self.__getDatabaseConnection()
         cursor = connection.cursor()
         
         #insertStatement = 'INSERT INTO ' + tableName + ' (wavesMarketPrice_usd, date) VALUES (%s, %s);'
-        insertStatement = 'INSERT INTO ' + tableName + ' (wavesMarketPrice_bitcoin, date) VALUES (%s, %s);'
+        #insertStatement = 'INSERT INTO ' + tableName + ' (wavesMarketPrice_bitcoin, date) VALUES (%s, %s);'
 
         cursor.executemany(insertStatement, data)
         connection.commit()

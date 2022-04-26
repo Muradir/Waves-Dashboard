@@ -5,10 +5,10 @@ from datetime import datetime, date
 
 class Database:
 
-    __userName = 'ugk98we9fog0mjs5'
-    __password = 'XaP2f68yAjHBfVwNmrTn'
-    __hostName = 'b7xzxkxarjooxxw9wkfi-mysql.services.clever-cloud.com'
-    __databaseName = 'b7xzxkxarjooxxw9wkfi'
+    __userName = 'u122k7mhfbxvt0rp'
+    __password = 'sYLq0OQvnWYw8Lv56bB6'
+    __hostName = 'bp1o15l1iwoajeyerhf6-mysql.services.clever-cloud.com'
+    __databaseName = 'bp1o15l1iwoajeyerhf6'
 
     def __getDatabaseConnection(self):
         try:
