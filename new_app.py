@@ -1,10 +1,10 @@
 #this is the root file of our backend service
 
 #import internal classes
-from mysqlx import InsertStatement
 from api_requests import ApiRequests
 from database import Database
-from new_wavescap_waves_marketprices import WavesMarketPrices
+from endpoints.wavescap_waves_usd import WavesUsdMarketPrices
+from endpoints.wavescap_bitcoin_usd import BitcoinUsdMarketPrices
 
 #import external modules
 from datetime import datetime, date
@@ -13,21 +13,22 @@ from dateutil.relativedelta import relativedelta
 def main():
     database = Database()
     print("Wir schaffen das!")
-    getMarketPricesData(database=database)
+    marketPricesUsd = []
+    wavesUsdMarketPrices = WavesUsdMarketPrices()
+    marketPricesUsd.append(wavesUsdMarketPrices)
+    bitcoinUsdMarketPrices = BitcoinUsdMarketPrices()
+    marketPricesUsd.append(bitcoinUsdMarketPrices)
+
+    for item in marketPricesUsd:
+        getMarketPricesData(database=database, apiEndpoint=item)
     #getMarketPrData(database=database)
 
-def getMarketPricesData(database):
-    wavesMarketPrices = WavesMarketPrices()
-    #url_waves_to_usd = "https://wavescap.com/api/chart/asset/WAVES-usd-n-all.json"
-    response = ApiRequests.getDataByGetRequest(wavesMarketPrices.getUrl(), [])
+def getMarketPricesData(database, apiEndpoint):
+    response = ApiRequests.getDataByGetRequest(apiEndpoint.getUrl(), [])
     marketPrices = response['data']
     startTime = response['start'][:10]
-    print(startTime)
-    print(type(startTime))
     startTime = date.fromisoformat(startTime)
-    print(startTime)
-    print(type(startTime))
-    print(marketPrices)
+    
     recordsToInsert = []
 
     for item in marketPrices:
@@ -40,7 +41,10 @@ def getMarketPricesData(database):
     
     print(recordsToInsert)
 
-    database.executeInsertStatement(tableName=wavesMarketPrices.getTableName(), tableAttributes=wavesMarketPrices.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=wavesMarketPrices.getDynamicInsertPlaceholders())
+    database.executeInsertStatement(tableName=apiEndpoint.getTableName(), tableAttributes=apiEndpoint.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=apiEndpoint.getDynamicInsertPlaceholders())
+
+
+
 
 def getMarketPrData(database):
     url_waves_to_bitcoin = "https://wavescap.com/api/chart/pair/WAVES-8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS-all.json"
