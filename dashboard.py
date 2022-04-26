@@ -35,15 +35,7 @@ app.layout = dbc.Container([
 
 def generate_graph_waves(self):
       
-    wavesSQL = [] #set an empty list
-    
-    rows = Database().executeSelectQuery(tableName = 'vw_report_waves_market_prices')
-    for row in rows:
-        wavesSQL.append(list(row))
-        labels = ['Datum','Wert']
-        dfwaves = pd.DataFrame.from_records(wavesSQL, columns=labels)
-        dfwaves['Wert'] = dfwaves['Wert'].apply(pd.to_numeric)
-        dfwaves['Datum'] = dfwaves['Datum'].apply(pd.to_datetime)
+    dfwaves = pd.read_pickle("./DataFrames/dfwaves")
 
     waves = px.scatter(dfwaves, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=10), trendline_color_override="crimson", template='plotly_dark') 
     waves_ma20 = px.scatter(dfwaves, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=20),  template='plotly_dark')
@@ -89,15 +81,8 @@ def generate_graph_waves(self):
         [Input('update_interval', 'interval')])
 
 def generate_graph_sharpe(self):
-    sharpeSQL = [] #set an empty list
-
-    rows = Database().executeSelectQuery(tableName = 'vw_report_sharpe_ratio_per_week')
-
-    for row in rows:
-        sharpeSQL.append(list(row))
-        labels = ['Woche', 'Kalenderwoche','Sharpe-Ratio']
-        dfsharpe = pd.DataFrame.from_records(sharpeSQL, columns=labels)
-        dfsharpe['Sharpe-Ratio'] = dfsharpe['Sharpe-Ratio'].apply(pd.to_numeric)
+    
+    dfsharpe = pd.read_pickle("./DataFrames/dfsharpe")
 
     sharpe = px.bar(dfsharpe, x='Kalenderwoche', y='Sharpe-Ratio', template='plotly_dark', hover_data={'Kalenderwoche':False})
     sharpe.update_traces(marker_color='darkorange')
