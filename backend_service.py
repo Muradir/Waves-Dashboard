@@ -7,6 +7,9 @@ from database import Database
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
+from endpoints.blockchair_bitcoin_stats import BitcoinStats
+from endpoints.blockchair_ethereum_stats import EthereumStats
+from endpoints.blockchair_waves_stats import WavesStats
 from endpoints.stlouisfed_sp500_usd import SP500UsdMarketPrices
 
 from endpoints.wavescap_bitcoin_usd import BitcoinUsdMarketPrices
@@ -21,7 +24,7 @@ def main():
     database = Database()
     print("Wir schaffen das!")
     getMarketPricesData(database=database)
-    #getMarketPrData(database=database)
+    getCryptoDetailsData(database=database)
 
 
 def getMarketPricesData(database):
@@ -51,6 +54,56 @@ def getMarketPricesData(database):
     getFundMarketPricesInUsd(database, sp500ToUsd)
 
 
+def getCryptoDetailsData(database):
+    bitcoinStats = BitcoinStats()
+    ethereumStats = EthereumStats()
+    blockchains = [bitcoinStats, ethereumStats]
+
+    for item in blockchains:
+        getBlockchainStats(database=database, blockchain=item)
+
+    wavesStats = WavesStats()
+    getCryptoStats(database=database, cryptoCurrency=wavesStats)
+
+
+def getCryptoStats(database, cryptoCurrency):
+    response = ApiRequests.getDataByGetRequest(cryptoCurrency.getUrl(), [])
+    cryptoStats = response['data']
+
+    recordsToInsert = []
+    attributes = [cryptoStats['transactions'], cryptoStats['transactions_24h'], datetime.today().date()]
+    recordsToInsert.append(tuple(attributes))
+
+    print(recordsToInsert)
+
+    database.executeInsertStatement(tableName=cryptoCurrency.getTableName(), tableAttributes=cryptoCurrency.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=cryptoCurrency.getDynamicInsertPlaceholders())
+
+    print('Data inserted successfully!')
+
+
+
+def getBlockchainStats(database, blockchain):
+    response = ApiRequests.getDataByGetRequest(blockchain.getUrl(), [])
+    cryptoStats = response['data']
+
+    recordsToInsert = []
+    attributes = []
+    attributes.append(cryptoStats['transactions'])
+    attributes.append(cryptoStats['transactions_24h'])
+    attributes.append(cryptoStats['average_transaction_fee_usd_24h'])
+    attributes.append(cryptoStats['market_price_usd_change_24h_percentage'])
+    attributes.append(cryptoStats['market_dominance_percentage'])
+    recordsToInsert.append(tuple(attributes))
+
+    print(recordsToInsert)
+
+    database.executeInsertStatement(tableName=blockchain.getTableName(), tableAttributes=blockchain.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=blockchain.getDynamicInsertPlaceholders())
+
+    print('Data inserted successfully!')
+
+
+
+
 def getFundMarketPricesInUsd(database, indexFund):
     response = ApiRequests.getDataByGetRequest(indexFund.getUrl(), [])
     marketPrices = response['observations']
@@ -60,12 +113,14 @@ def getFundMarketPricesInUsd(database, indexFund):
         attributes = []
         if(item['value']) != '.':
             attributes.append(Decimal(item['value']))
-        else:
-            attributes.append(0.0)
-        attributes.append(date.fromisoformat(item['date']))
-        recordsToInsert.append(tuple(attributes))
+            attributes.append(date.fromisoformat(item['date']))
+            recordsToInsert.append(tuple(attributes))
 
     print(recordsToInsert)
+
+    database.executeInsertStatement(tableName=indexFund.getTableName(), tableAttributes=indexFund.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=indexFund.getDynamicInsertPlaceholders())
+
+    print('Data inserted successfully!')
 
 
 def getCryptoMarketPricesInUsd(database, cryptoCurrency):
