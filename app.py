@@ -6,6 +6,8 @@ from database import Database
 #import external modules
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
+from decimal import Decimal
+from endpoints.stlouisfed_sp500_usd import SP500UsdMarketPrices
 
 from endpoints.wavescap_bitcoin_usd import BitcoinUsdMarketPrices
 from endpoints.wavescap_ethereum_bitcoin import EthereumBitcoinMarketPrices
@@ -13,7 +15,6 @@ from endpoints.wavescap_ethereum_usd import EthereumUsdMarketPrices
 from endpoints.wavescap_ethereum_waves import EthereumWavesMarketPrices
 from endpoints.wavescap_waves_bitcoin import WavesBitcoinMarketPrices
 from endpoints.wavescap_waves_usd import WavesUsdMarketPrices
-
 
 
 def main():
@@ -46,6 +47,25 @@ def getMarketPricesData(database):
     for item in cryptosToCrypto:
         getCryptoMarketPricesInCrypto(database=database, cryptoCurrency=item)
 
+    sp500ToUsd = SP500UsdMarketPrices()
+    getFundMarketPricesInUsd(database, sp500ToUsd)
+
+
+def getFundMarketPricesInUsd(database, indexFund):
+    response = ApiRequests.getDataByGetRequest(indexFund.getUrl(), [])
+    marketPrices = response['observations']
+
+    recordsToInsert = []
+    for item in marketPrices:
+        attributes = []
+        if(item['value']) != '.':
+            attributes.append(Decimal(item['value']))
+        else:
+            attributes.append(0.0)
+        attributes.append(date.fromisoformat(item['date']))
+        recordsToInsert.append(tuple(attributes))
+
+    print(recordsToInsert)
 
 
 def getCryptoMarketPricesInUsd(database, cryptoCurrency):
@@ -64,11 +84,9 @@ def getCryptoMarketPricesInUsd(database, cryptoCurrency):
         recordsToInsert.append(tuple(item))
     
 
-
     database.executeInsertStatement(tableName=cryptoCurrency.getTableName(), tableAttributes=cryptoCurrency.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=cryptoCurrency.getDynamicInsertPlaceholders())
 
     print('Data inserted successfully!')
-
 
 
 def getCryptoMarketPricesInCrypto(database, cryptoCurrency):
