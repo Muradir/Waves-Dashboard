@@ -2,12 +2,12 @@ class EthereumWavesMarketPrices:
 
     #private class attributes
     __url = 'https://wavescap.com/api/chart/pair/474jTeYx2r2Va35794tCScAXWJG9hU2HcgxzMowaZUnu-WAVES-all.json'
-    __headers = None
     __tableName = 'wavescap_marketPricesEthereumToWaves'
     __tableAttributes = '(ethereumMarketPrice_waves, date)'
     __dynamicInsertPlaceholders = '%s, %s'
 
-    #public class get methods
+
+    #public class getter methods
     def getUrl(self):
         return self.__url
 

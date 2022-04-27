@@ -2,12 +2,12 @@ class WavesBitcoinMarketPrices:
 
     #private class attributes
     __url = "https://wavescap.com/api/chart/pair/WAVES-8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS-all.json"
-    __headers = None
     __tableName = 'wavescap_marketPricesWavesToBitcoin'
     __tableAttributes = '(wavesMarketPrice_bitcoin, date)'
     __dynamicInsertPlaceholders = '%s, %s'
 
-    #public class get methods
+
+    #public class getter methods
     def getUrl(self):
         return self.__url
 

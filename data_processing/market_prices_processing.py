@@ -13,7 +13,10 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
+
 class MarketPricesDataProcessing:
+
+    #public class method, initiates the data processing workflow by invoking private class methods
     def start(self):
         cryptosToUsd = [BitcoinUsdMarketPrices(), EthereumUsdMarketPrices(), WavesUsdMarketPrices()]
         for item in cryptosToUsd:
@@ -26,6 +29,7 @@ class MarketPricesDataProcessing:
         self.__getFundMarketPricesInUsd(SP500UsdMarketPrices())
 
 
+    #private class method, gets data via api request and initiates the database insertion
     def __getFundMarketPricesInUsd(self, indexFund):
         response = requests.get(url = indexFund.getUrl()).json()
         marketPrices = response['observations']
@@ -39,6 +43,7 @@ class MarketPricesDataProcessing:
         Database().insertDataIntoDatabase(entity=indexFund, recordsToInsert=recordsToInsert)
 
 
+    #private class method, gets data via api request and initiates the database insertion
     def __getCryptoMarketPricesInUsd(self, cryptoCurrency):
         response = requests.get(url = cryptoCurrency.getUrl()).json()
         marketPrices = response['data']
@@ -52,7 +57,7 @@ class MarketPricesDataProcessing:
         
         Database().insertDataIntoDatabase(entity=cryptoCurrency, recordsToInsert=recordsToInsert)
 
-
+    #private class method, gets data via api request and initiates the database insertion
     def __getCryptoMarketPricesInCrypto(self, cryptoCurrency):
         response = requests.get(url = cryptoCurrency.getUrl()).json()
         marketPrices = response['data']

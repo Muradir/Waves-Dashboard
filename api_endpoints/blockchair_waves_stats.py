@@ -2,12 +2,12 @@ class WavesStats:
 
     #private class attributes
     __url = 'https://api.blockchair.com/ethereum/erc-20/0x1cf4592ebffd730c7dc92c1bdffdfc3b9efcf29a/stats'
-    __headers = None
     __tableName = 'blockchair_wavesDetails'
     __tableAttributes = '(transactions_total, transactions_24h, date)'
     __dynamicInsertPlaceholders = '%s, %s, %s'
 
-    #public class get methods
+
+    #public class getter methods
     def getUrl(self):
         return self.__url
 

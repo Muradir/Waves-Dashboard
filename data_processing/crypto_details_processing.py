@@ -10,6 +10,7 @@ import requests
 
 class CryptoStatsDataProcessing:
     
+    #public class method, initiates the data processing workflow by invoking private class methods
     def start(self):
         blockchains = [BitcoinStats(), EthereumStats()]
         for item in blockchains:
@@ -18,6 +19,7 @@ class CryptoStatsDataProcessing:
         self.__getCryptoStats(cryptoCurrency=WavesStats())
 
 
+    #private class method, gets data via api request and initiates the database insertion
     def __getCryptoStats(self, cryptoCurrency):
         response = requests.get(url = cryptoCurrency.getUrl()).json()
         cryptoStats = response['data']
@@ -28,6 +30,7 @@ class CryptoStatsDataProcessing:
         Database().insertDataIntoDatabase(entity=cryptoCurrency, recordsToInsert=recordsToInsert)
 
 
+    #private class method, gets data via api request and initiates the database insertion
     def __getBlockchainStats(self, blockchain):
         response = requests.get(url = blockchain.getUrl()).json()
         cryptoStats = response['data']

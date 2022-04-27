@@ -4,11 +4,33 @@ from mysql.connector import Error
 
 class Database:
 
+    #private class attributes, needed for database authentication
     __userName = 'ugk98we9fog0mjs5'
     __password = 'XaP2f68yAjHBfVwNmrTn'
     __hostName = 'b7xzxkxarjooxxw9wkfi-mysql.services.clever-cloud.com'
     __databaseName = 'b7xzxkxarjooxxw9wkfi'
 
+
+    #public class method, extracts the whole dataset from a specific table of the database
+    def executeSelectQuery(self, tableName):
+        selectStatement = 'SELECT * FROM ' + tableName + ';'
+
+        connection = self.__getDatabaseConnection()
+        cursor = connection.cursor()
+        cursor.execute(selectStatement)
+        data = cursor.fetchall()
+        self.__closeDatabaseConnection(connection)
+        return data
+
+
+    #public class method, initiates data insertion to a specific table of the database
+    def insertDataIntoDatabase(self, entity, recordsToInsert):
+        self.__executeInsertStatement(tableName=entity.getTableName(), tableAttributes=entity.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=entity.getDynamicInsertPlaceholders())
+
+        print('Data of entity ' + entity.getTableName() + ' was inserted successfully into Database!')
+
+
+    #private class methods, creates a connection to the database
     def __getDatabaseConnection(self):
         try:
             connection = mysql.connector.connect(
@@ -24,28 +46,14 @@ class Database:
             print("Error while connecting to MySQL", e)
 
 
+    #private class method, closes an existing connection to the database
     def __closeDatabaseConnection(self, connection):
         if connection.is_connected():
             connection.cursor().close()
             connection.close()
-
-
-    def executeSelectQuery(self, tableName):
-        selectStatement = 'SELECT * FROM ' + tableName + ';'
-
-        connection = self.__getDatabaseConnection()
-        cursor = connection.cursor()
-        cursor.execute(selectStatement)
-        data = cursor.fetchall()
-        self.__closeDatabaseConnection(connection)
-        return data
-
-    def insertDataIntoDatabase(self, entity, recordsToInsert):
-        self.__executeInsertStatement(tableName=entity.getTableName(), tableAttributes=entity.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=entity.getDynamicInsertPlaceholders())
-
-        print('Data of entity ' + entity.getTableName() + ' was inserted successfully into Database!')
         
 
+    #private class method, inserts data into a specific table of the database
     def __executeInsertStatement(self, tableName, tableAttributes, data, dynamicInsertPlaceholders):
         insertStatement = 'INSERT INTO ' + tableName + tableAttributes + ' VALUES (' + dynamicInsertPlaceholders + ');'
 
@@ -57,6 +65,7 @@ class Database:
         self.__closeDatabaseConnection(connection)
 
 
+    #private class method, deletes all data from a specific table, is invoked before every data insertion
     def __executeTruncateStatement(self, tableName):
         truncateStatement = 'TRUNCATE TABLE ' + tableName + ';'
 

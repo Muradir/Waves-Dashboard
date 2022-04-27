@@ -2,12 +2,12 @@ class BitcoinStats:
 
     #private class attributes
     __url = 'https://api.blockchair.com/bitcoin/stats'
-    __headers = None
     __tableName = 'blockchair_bitcoinDetails'
     __tableAttributes = '(transactions_total, transactions_24h, averageTransactionFee_24h_usd, marketPriceChangePercentage_24h_usd, marketDominancePercentage)'
     __dynamicInsertPlaceholders = '%s, %s, %s, %s, %s'
 
-    #public class get methods
+
+    #public class getter methods
     def getUrl(self):
         return self.__url
 

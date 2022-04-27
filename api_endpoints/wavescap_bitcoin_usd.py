@@ -2,12 +2,12 @@ class BitcoinUsdMarketPrices:
 
     #private class attributes
     __url = 'https://wavescap.com/api/chart/asset/8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS-usd-n-all.json'
-    __headers = None
     __tableName = 'wavescap_marketPricesBitcoinToUsd'
     __tableAttributes = '(bitcoinMarketPrice_usd, date)'
     __dynamicInsertPlaceholders = '%s, %s'
 
-    #public class get methods
+
+    #public class getter methods
     def getUrl(self):
         return self.__url
 

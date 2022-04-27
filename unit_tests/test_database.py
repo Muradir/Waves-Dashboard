@@ -1,8 +1,8 @@
-#import modules
+#import external modules
 import unittest
 from datetime import datetime
 
-#import classes
+#import internal classes
 from database_depr import Database
 
 class TestDatabase(unittest.TestCase):
