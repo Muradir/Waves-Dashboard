@@ -17,6 +17,7 @@ app.layout = dbc.Container([
         html.H1("Cryptodashboard", style={'text-align': 'center'}),
         html.Div([
             html.H1("Market prices", style={'text-align': 'center'}),
+            dcc.Interval(id='update_interval', interval=1*30000),
             html.Div(style={"width": '20%'}, children=[
                 dcc.Dropdown(
                 id='dropdown',
@@ -84,8 +85,8 @@ def generate_graph_waves(dropdown):
     )
     return values
 
-#@app.callback(Output('apy', 'figure'), 
-#    [Input('update_interval', 'interval')])
+@app.callback(Output('apy', 'figure'), 
+    [Input('update_interval', 'interval')])
 
 def generate_graph_apy(self):
     apySQL = []
