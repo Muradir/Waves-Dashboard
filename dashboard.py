@@ -15,7 +15,6 @@ server = app.server
 app.layout = dbc.Container([
     html.Div([
         html.H1("Cryptodashboard", style={'text-align': 'center'}),
-        dcc.Interval(id='update_interval', interval=1*30000),
         html.Div([
             html.H1("Market prices", style={'text-align': 'center'}),
             html.Div(style={"width": '20%'}, children=[
@@ -45,25 +44,32 @@ app.layout = dbc.Container([
 ##Durch die Callbacks werden die Graphen mit Hilfe des Plotly Dash Frameworks erzeugt. Im App Layout werden dann nach dem Aufrufen der Callbacks die Graphen aktualisiert und angezeigt.
 
 @app.callback(Output('graph', 'figure'), 
-            [Input('update_interval', 'interval')])
+            [Input('dropdown', 'value')])
 
 ##Der folgende Code wird innerhalb des Callbacks ausgeführt und "zeichnet" den Graphen.
 
-def generate_graph_waves(self):
+def generate_graph_waves(dropdown):
 
-    dfwaves = pd.read_pickle("./DataFrames/dfwaves")
+    if dropdown == 'USD':
+        CryptoData = pd.read_pickle("./DataFrames/dfusd")
+    elif dropdown == 'BTC':
+        CryptoData = pd.read_pickle("./DataFrames/dfbitcoin")
+    elif dropdown == 'ETH':
+        CryptoData = pd.read_pickle("./DataFrames/dfethereum")
+    elif dropdown == 'WAVES':
+        CryptoData = pd.read_pickle("./DataFrames/dfwaves")
+        
+    values = px.scatter(CryptoData, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=7), trendline_color_override="crimson", template='plotly_dark') 
 
-    waves = px.scatter(dfwaves, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=7), trendline_color_override="crimson", template='plotly_dark') 
+    values['data'][0]['showlegend']=True
+    values['data'][1]['showlegend']=True
+    values['data'][0]['name']='Waves'
+    values['data'][1]['name']='MA 7'
 
-    waves['data'][0]['showlegend']=True
-    waves['data'][1]['showlegend']=True
-    waves['data'][0]['name']='Waves'
-    waves['data'][1]['name']='MA 7'
-
-    waves.update_traces(mode="lines", hovertemplate=None)
-    waves.update_layout(hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
-    waves.update_yaxes(title_text="Wert in USD")
-    waves.update_xaxes(
+    values.update_traces(mode="lines", hovertemplate=None)
+    values.update_layout(hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
+    #waves.update_yaxes(title_text="Wert in USD")
+    values.update_xaxes(
         rangeslider_visible=True,
         rangeselector=dict(
             buttons=list([
@@ -76,10 +82,10 @@ def generate_graph_waves(self):
             bgcolor="dimgray"
         )
     )
-    return waves
+    return values
 
-@app.callback(Output('apy', 'figure'), 
-    [Input('update_interval', 'interval')])
+#@app.callback(Output('apy', 'figure'), 
+#    [Input('update_interval', 'interval')])
 
 def generate_graph_apy(self):
     apySQL = []
