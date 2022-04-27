@@ -8,7 +8,10 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 from endpoints.wavescap_bitcoin_usd import BitcoinUsdMarketPrices
+from endpoints.wavescap_ethereum_bitcoin import EthereumBitcoinMarketPrices
 from endpoints.wavescap_ethereum_usd import EthereumUsdMarketPrices
+from endpoints.wavescap_ethereum_waves import EthereumWavesMarketPrices
+from endpoints.wavescap_waves_bitcoin import WavesBitcoinMarketPrices
 from endpoints.wavescap_waves_usd import WavesUsdMarketPrices
 
 
@@ -32,6 +35,17 @@ def getMarketPricesData(database):
     for item in cryptosToUsd:
         getCryptoMarketPricesInUsd(database, item)
 
+    cryptosToCrypto = []
+    ethereumToBitcoin = EthereumBitcoinMarketPrices()
+    cryptosToCrypto.append(ethereumToBitcoin)
+    ethereumToWaves = EthereumWavesMarketPrices()
+    cryptosToCrypto.append(ethereumToWaves)
+    wavesToBitcoin = WavesBitcoinMarketPrices()
+    cryptosToCrypto.append(wavesToBitcoin)
+
+    for item in cryptosToCrypto:
+        getCryptoMarketPricesInCrypto(database=database, cryptoCurrency=item)
+
 
 
 def getCryptoMarketPricesInUsd(database, cryptoCurrency):
@@ -43,7 +57,6 @@ def getCryptoMarketPricesInUsd(database, cryptoCurrency):
     startTime = date.fromisoformat(startTime)
  
     recordsToInsert = []
-    
     for item in marketPrices:
         item.pop()
         startTime = startTime + relativedelta(days=1)
@@ -51,7 +64,6 @@ def getCryptoMarketPricesInUsd(database, cryptoCurrency):
         recordsToInsert.append(tuple(item))
     
 
-    print(recordsToInsert)
 
     database.executeInsertStatement(tableName=cryptoCurrency.getTableName(), tableAttributes=cryptoCurrency.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=cryptoCurrency.getDynamicInsertPlaceholders())
 
@@ -59,11 +71,11 @@ def getCryptoMarketPricesInUsd(database, cryptoCurrency):
 
 
 
-def getMarketPrData(database):
+def getCryptoMarketPricesInCrypto(database, cryptoCurrency):
     
-    url_waves_to_bitcoin = "https://wavescap.com/api/chart/pair/WAVES-8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS-all.json"
-    response = ApiRequests.getDataByGetRequest(url_waves_to_bitcoin, [])
+    response = ApiRequests.getDataByGetRequest(cryptoCurrency.getUrl(), [])
     marketPrices = response['data']
+
     recordsToInsert = []
     for item in marketPrices:
         attributes = []
@@ -73,7 +85,11 @@ def getMarketPrData(database):
         attributes.append(startTime)
         
         recordsToInsert.append(tuple(attributes))
-    database.executeInsertStatement(tableName='wavescap_marketPricesWavesToBitcoin', data=recordsToInsert)
+
+
+    database.executeInsertStatement(tableName=cryptoCurrency.getTableName(), tableAttributes=cryptoCurrency.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=cryptoCurrency.getDynamicInsertPlaceholders())
+
+    print('Data inserted successfully!')
 
 
 
