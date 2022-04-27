@@ -1,9 +1,11 @@
+#import internal classes
+from data_stores.database import Database
+from api_endpoints.blockchair_bitcoin_stats import BitcoinStats
+from api_endpoints.blockchair_ethereum_stats import EthereumStats
+from api_endpoints.blockchair_waves_stats import WavesStats
+#import external modules
 from datetime import datetime
-from api_requests import ApiRequests
-from database import Database
-from endpoints.blockchair_bitcoin_stats import BitcoinStats
-from endpoints.blockchair_ethereum_stats import EthereumStats
-from endpoints.blockchair_waves_stats import WavesStats
+import requests
 
 
 class CryptoStatsDataProcessing:
@@ -17,7 +19,7 @@ class CryptoStatsDataProcessing:
 
 
     def __getCryptoStats(self, cryptoCurrency):
-        response = ApiRequests.getDataByGetRequest(cryptoCurrency.getUrl(), [])
+        response = requests.get(url = cryptoCurrency.getUrl()).json()
         cryptoStats = response['data']
 
         attributes = [cryptoStats['transactions'], cryptoStats['transactions_24h'], datetime.today().date()]
@@ -27,7 +29,7 @@ class CryptoStatsDataProcessing:
 
 
     def __getBlockchainStats(self, blockchain):
-        response = ApiRequests.getDataByGetRequest(blockchain.getUrl(), [])
+        response = requests.get(url = blockchain.getUrl()).json()
         cryptoStats = response['data']
 
         attributes = [cryptoStats['transactions'], cryptoStats['transactions_24h'], cryptoStats['average_transaction_fee_usd_24h'], cryptoStats['market_price_usd_change_24h_percentage'], cryptoStats['market_dominance_percentage']]
