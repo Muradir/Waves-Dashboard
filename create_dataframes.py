@@ -1,26 +1,45 @@
 import pandas as pd
 from database_depr import Database
 
-wavesSQL = [] #set an empty list
+##Erzeuge eine leere Liste.
+wavesSQL = []
+##Rufe Daten aus der SQL per Select Befehl ab.    
+rows = Database().executeSelectQuery(tableName = 'vw_report_waves_market_prices')
+##Übergebe die gesammelten Daten aus der SQL an die Liste.
+for row in rows:
+    wavesSQL.append(list(row))
+    labels = ['Datum','Wert']
+    ##Übertrage die gesammelten Daten an den Dataframe.
+    dfwaves = pd.DataFrame.from_records(wavesSQL, columns=labels)
+    ##Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
+    dfwaves['Wert'] = dfwaves['Wert'].apply(pd.to_numeric)
+    dfwaves['Datum'] = dfwaves['Datum'].apply(pd.to_datetime)
+
+dfwaves.to_pickle("./DataFrames/dfwaves")
+print("Waves Data successfully saved to Dataframe: dfwaves")
+
+bitcoinSQL = [] #set an empty list
     
 rows = Database().executeSelectQuery(tableName = 'vw_report_waves_market_prices')
 for row in rows:
     wavesSQL.append(list(row))
     labels = ['Datum','Wert']
-    dfwaves = pd.DataFrame.from_records(wavesSQL, columns=labels)
-    dfwaves['Wert'] = dfwaves['Wert'].apply(pd.to_numeric)
-    dfwaves['Datum'] = dfwaves['Datum'].apply(pd.to_datetime)
+    dfbitcoin = pd.DataFrame.from_records(wavesSQL, columns=labels)
+    dfbitcoin['Wert'] = dfbitcoin['Wert'].apply(pd.to_numeric)
+    dfbitcoin['Datum'] = dfbitcoin['Datum'].apply(pd.to_datetime)
 
-dfwaves.to_pickle("./DataFrames/dfwaves")
+dfbitcoin.to_pickle("./DataFrames/dfbitcoin")
+print("Bitcoin Data successfully saved to Dataframe: dfbitcoin")
 
-sharpeSQL = [] #set an empty list
-
-rows = Database().executeSelectQuery(tableName = 'vw_report_sharpe_ratio_per_week')
-
+ethereumSQL = [] #set an empty list
+    
+rows = Database().executeSelectQuery(tableName = 'vw_report_waves_market_prices')
 for row in rows:
-    sharpeSQL.append(list(row))
-    labels = ['Woche', 'Kalenderwoche','Sharpe-Ratio']
-    dfsharpe = pd.DataFrame.from_records(sharpeSQL, columns=labels)
-    dfsharpe['Sharpe-Ratio'] = dfsharpe['Sharpe-Ratio'].apply(pd.to_numeric)
+    wavesSQL.append(list(row))
+    labels = ['Datum','Wert']
+    dfethereum = pd.DataFrame.from_records(wavesSQL, columns=labels)
+    dfethereum['Wert'] = dfethereum['Wert'].apply(pd.to_numeric)
+    dfethereum['Datum'] = dfethereum['Datum'].apply(pd.to_datetime)
 
-dfsharpe.to_pickle("./DataFrames/dfsharpe")
+dfethereum.to_pickle("./DataFrames/dfethereum")
+print("Ethereum Data successfully saved to Dataframe: dfethereum")
