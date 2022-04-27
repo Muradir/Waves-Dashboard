@@ -3,7 +3,6 @@
 #import external modules
 import mysql.connector
 from mysql.connector import Error
-from datetime import datetime, date
 
 class Database:
 
@@ -20,7 +19,6 @@ class Database:
                 host = self.__hostName, 
                 database = self.__databaseName,
             )
-
             if connection.is_connected():
                 return connection
 
@@ -28,40 +26,42 @@ class Database:
             print("Error while connecting to MySQL", e)
 
 
-    def __closeDatabaseConnection(self, cursor, connection):
+    def __closeDatabaseConnection(self, connection):
         if connection.is_connected():
-            cursor.close()
+            connection.cursor().close()
             connection.close()
 
 
     def executeSelectQuery(self, tableName):
-        connection = self.__getDatabaseConnection()
         selectStatement = 'SELECT * FROM ' + tableName + ';'
+
+        connection = self.__getDatabaseConnection()
         cursor = connection.cursor()
         cursor.execute(selectStatement)
         data = cursor.fetchall()
-        self.__closeDatabaseConnection(cursor, connection)
+        self.__closeDatabaseConnection(connection)
         return data
+
+    def insertDataIntoDatabase(self, entity, recordsToInsert):
+        self.__executeInsertStatement(tableName=entity.getTableName(), tableAttributes=entity.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=entity.getDynamicInsertPlaceholders())
+
+        print('Data of entity ' + entity.getTableName() + ' was inserted successfully into Database!')
         
 
-    def executeInsertStatement(self, tableName, tableAttributes, data, dynamicInsertPlaceholders):
+    def __executeInsertStatement(self, tableName, tableAttributes, data, dynamicInsertPlaceholders):
+        insertStatement = 'INSERT INTO ' + tableName + tableAttributes + ' VALUES (' + dynamicInsertPlaceholders + ');'
 
         self.__executeTruncateStatement(tableName=tableName)
         connection = self.__getDatabaseConnection()
-        cursor = connection.cursor()
         
-        insertStatement = 'INSERT INTO ' + tableName + tableAttributes + ' VALUES (' + dynamicInsertPlaceholders + ');'
-        #insertStatement = 'INSERT INTO ' + tableName + ' (wavesMarketPrice_bitcoin, date) VALUES (%s, %s);'
-
-        cursor.executemany(insertStatement, data)
+        connection.cursor().executemany(insertStatement, data)
         connection.commit()
-        self.__closeDatabaseConnection(cursor, connection)
+        self.__closeDatabaseConnection(connection)
 
 
     def __executeTruncateStatement(self, tableName):
         truncateStatement = 'TRUNCATE TABLE ' + tableName + ';'
 
         connection = self.__getDatabaseConnection()
-        cursor = connection.cursor()
-        cursor.execute(truncateStatement)
-        self.__closeDatabaseConnection(cursor, connection)
+        connection.cursor().execute(truncateStatement)
+        self.__closeDatabaseConnection(connection)
