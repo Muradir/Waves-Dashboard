@@ -1,42 +1,23 @@
 #import external modules
 import unittest
-from datetime import datetime
+import sys, os
+
+testdir = os.path.dirname(__file__)
+srcdir = '../data_stores'
+sys.path.insert(0, os.path.abspath(os.path.join(testdir, srcdir)))
 
 #import internal classes
-from database_depr import Database
+from database import Database
+from test_data import TestData
 
+#testing the functionality of the database
 class TestDatabase(unittest.TestCase):
 
-    def test_executeTruncateStatement(self):
-        Database().executeTruncateStatement(tableName='stage_test_table')
-        self.assertEqual(Database().executeSelectQuery(tableName='stage_test_table'), [])
+    def test_insertDataIntoDatabase(self):
+        self.assertEquals(Database().insertDataIntoDatabase(entity=TestData(), recordsToInsert=[(1, 'test')]), 'Data of entity test_table was inserted successfully into Database!')
 
-    def test_executeInsertStatement(self):
-        Database().executeInsertStatement(tableName='stage_test_table', data=[{'test_column' : 'test'}], loadId=0, tableAttributes=['test_column', 'loadId'], dynamicValues='%s, %s')
-        self.assertEquals(Database().executeSelectQuery(tableName='stage_test_table'), [('test', 0)])
-
-    def test_executeSelectQuery(self): 
-        self.assertEqual(Database().executeSelectQuery('stage_test_table'),  [('test', 0)])
-
-    def test_callLoadIdProcedure(self):
-        self.assertGreater(Database().callLoadIdProcedure(procedureParameters=['stage_test_table', datetime.today()]), 0)
-
-    def test_callCoreProcessingProcedure(self):
-        Database().executeTruncateStatement(tableName='core_test_table')
-        Database().executeInsertStatement(tableName='stage_test_table', data=[{'test_column' : 'tests'}], loadId=0, tableAttributes=['test_column', 'loadId'], dynamicValues='%s, %s')
-        Database().callCoreProcessingProcedure(tableName='core_test_table', procedureName='load_core_test_table')
-        self.assertEquals(Database().executeSelectQuery('core_test_table'), [])
-
-
-
-
-
-
-
-
-
-
-
+    def test_executeSelectQuery(self):
+        self.assertEqual(Database().executeSelectQuery(tableName='test_table'), [(1, 'test')])
 
 
 if __name__ == '__main__':
