@@ -1,7 +1,7 @@
 class WavesBitcoinMarketPrices:
 
     #private class attributes
-    __url = "https://wavescap.com/api/chart/pair/WAVES-8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS-all.json"
+    __url = 'https://wavescap.com/api/chart/pair/WAVES-8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS-all.json'
     __dbTableName = 'wavescap_marketPricesWavesToBitcoin'
     __dbTableAttributes = '(wavesMarketPrice_bitcoin, date)'
     __dbDynamicInsertPlaceholders = '%s, %s'
