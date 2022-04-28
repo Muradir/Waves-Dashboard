@@ -28,6 +28,7 @@ class Database:
         self.__executeInsertStatement(tableName=entity.getDbTableName(), tableAttributes=entity.getDbTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=entity.getDbDynamicInsertPlaceholders())
 
         print('Data of entity ' + entity.getDbTableName() + ' was inserted successfully into Database!')
+        return 'Data of entity ' + entity.getDbTableName() + ' was inserted successfully into Database!'
 
 
     #private class methods, creates a connection to the database
