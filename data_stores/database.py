@@ -25,9 +25,9 @@ class Database:
 
     #public class method, initiates data insertion to a specific table of the database
     def insertDataIntoDatabase(self, entity, recordsToInsert):
-        self.__executeInsertStatement(tableName=entity.getTableName(), tableAttributes=entity.getTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=entity.getDynamicInsertPlaceholders())
+        self.__executeInsertStatement(tableName=entity.getDbTableName(), tableAttributes=entity.getDbTableAttributes(), data=recordsToInsert, dynamicInsertPlaceholders=entity.getDbDynamicInsertPlaceholders())
 
-        print('Data of entity ' + entity.getTableName() + ' was inserted successfully into Database!')
+        print('Data of entity ' + entity.getDbTableName() + ' was inserted successfully into Database!')
 
 
     #private class methods, creates a connection to the database

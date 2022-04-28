@@ -2,23 +2,20 @@ class SP500UsdMarketPrices:
 
     #private class attributes
     __url = 'https://api.stlouisfed.org/fred/series/observations?api_key=1260500ff9e23c45cdf81a960f44bf68&file_type=json&observation_start=2017-01-01&series_id=SP500'
-    __tableName = 'stlouisfed_marketPricesSP500ToUsd'
-    __tableAttributes = '(sp500MarketPrice_usd, date)'
-    __dynamicInsertPlaceholders = '%s, %s'
+    __dbTableName = 'stlouisfed_marketPricesSP500ToUsd'
+    __dbTableAttributes = '(sp500MarketPrice_usd, date)'
+    __dbDynamicInsertPlaceholders = '%s, %s'
 
 
     #public class getter methods
     def getUrl(self):
         return self.__url
 
-    def getHeaders(self):
-        return self.__headers
+    def getDbTableName(self):
+        return self.__dbTableName
 
-    def getTableName(self):
-        return self.__tableName
+    def getDbTableAttributes(self):
+        return self.__dbTableAttributes
 
-    def getTableAttributes(self):
-        return self.__tableAttributes
-
-    def getDynamicInsertPlaceholders(self):
-        return self.__dynamicInsertPlaceholders
+    def getDbDynamicInsertPlaceholders(self):
+        return self.__dbDynamicInsertPlaceholders
