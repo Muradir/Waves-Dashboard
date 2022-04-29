@@ -1,17 +1,25 @@
-#import internal classes
-from data_stores.database import Database
-from api_endpoints.stlouisfed_sp500_usd import SP500UsdMarketPrices
-from api_endpoints.wavescap_bitcoin_usd import BitcoinUsdMarketPrices
-from api_endpoints.wavescap_ethereum_bitcoin import EthereumBitcoinMarketPrices
-from api_endpoints.wavescap_ethereum_usd import EthereumUsdMarketPrices
-from api_endpoints.wavescap_ethereum_waves import EthereumWavesMarketPrices
-from api_endpoints.wavescap_waves_bitcoin import WavesBitcoinMarketPrices
-from api_endpoints.wavescap_waves_usd import WavesUsdMarketPrices
 #import external modules
 import requests
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
+import os, sys
+
+pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../api_endpoints')
+sys.path.append(pathToApiEndpointsDir)
+
+pathToDataStoresDir = os.path.join(os.path.dirname(__file__), '../data_stores')
+sys.path.append(pathToDataStoresDir)
+
+#import internal classes
+from database import Database
+from stlouisfed_sp500_usd import SP500UsdMarketPrices
+from wavescap_bitcoin_usd import BitcoinUsdMarketPrices
+from wavescap_ethereum_bitcoin import EthereumBitcoinMarketPrices
+from wavescap_ethereum_usd import EthereumUsdMarketPrices
+from wavescap_ethereum_waves import EthereumWavesMarketPrices
+from wavescap_waves_bitcoin import WavesBitcoinMarketPrices
+from wavescap_waves_usd import WavesUsdMarketPrices
 
 
 class MarketPricesDataProcessing:
@@ -27,6 +35,7 @@ class MarketPricesDataProcessing:
             self.__getCryptoMarketPricesInCrypto(cryptoCurrency=item)
 
         self.__getFundMarketPricesInUsd(SP500UsdMarketPrices())
+        return 'Market Prices Data Loaded'
 
 
     #private class method, gets data via api request and initiates the database insertion

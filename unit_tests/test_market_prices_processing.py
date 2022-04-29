@@ -6,13 +6,13 @@ pathToDataProcessingDir = os.path.join(os.path.dirname(__file__), '../data_proce
 sys.path.append(pathToDataProcessingDir)
 
 #import internal classes
-from crypto_details_processing import CryptoStatsDataProcessing
+from market_prices_processing import MarketPricesDataProcessing
 
 #testing the functionality of the database
-class TestCryptoStatsDataProcessing(unittest.TestCase):
+class TestMarketPricesDataProcessing(unittest.TestCase):
     
     def test_start(self):
-        self.assertEquals(CryptoStatsDataProcessing().start(), 'Crypto Stats Data Loaded')
+        self.assertEquals(MarketPricesDataProcessing().start(), 'Market Prices Data Loaded')
 
 if __name__ == '__main__':
     unittest.main()

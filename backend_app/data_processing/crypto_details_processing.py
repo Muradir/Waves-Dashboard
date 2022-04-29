@@ -1,16 +1,15 @@
-print('accessed CryptoStatsDP')
 #import external modules
 from datetime import datetime
 import requests
 import sys, os
 
-testdir = os.path.dirname(__file__)
-srcdir = '../api_endpoints'
-sys.path.insert(1, os.path.abspath(os.path.join(testdir, srcdir)))
-testdir2 = os.path.dirname(__file__)
-srcdir2 = '../data_stores'
-sys.path.insert(0, os.path.abspath(os.path.join(testdir2, srcdir2)))
-print(sys.path)
+
+pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../api_endpoints')
+sys.path.append(pathToApiEndpointsDir)
+
+pathToDataStoresDir = os.path.join(os.path.dirname(__file__), '../data_stores')
+sys.path.append(pathToDataStoresDir)
+
 
 #import internal classes
 from database import Database

@@ -3,6 +3,8 @@
         "./data processing",
         "./data_processing",
         "./data_stores",
-        "./api_endpoints"
+        "./api_endpoints",
+        "./backend_app/api_endpoints",
+        "./backend_app"
     ]
 }

@@ -1,5 +1,3 @@
-print('accessed DB')
-
 #import external modules
 import mysql.connector
 from mysql.connector import Error
