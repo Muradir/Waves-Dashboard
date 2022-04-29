@@ -1,5 +1,7 @@
 {
     "python.analysis.extraPaths": [
-        "./data processing"
+        "./data processing",
+        "./data_processing",
+        "./data_stores"
     ]
 }
