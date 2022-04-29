@@ -8,7 +8,7 @@ import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
 from database_depr import Database
 
-app = Dash(__name__)
+app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
 
 ## Im folgenden Abschnitt wird das Layout des Dashboards festegelegt und mit HTML-Code definiert.
@@ -52,20 +52,21 @@ app.layout = dbc.Container([
 def generate_graph_waves(dropdown):
 
     if dropdown == 'USD':
-        CryptoData = pd.read_pickle("./DataFrames/dfusd")
+        CryptoData = pd.read_pickle("./data_stores/dfusd")
     elif dropdown == 'BTC':
-        CryptoData = pd.read_pickle("./DataFrames/dfbitcoin")
+        CryptoData = pd.read_pickle("./data_stores/dfbitcoin")
     elif dropdown == 'ETH':
-        CryptoData = pd.read_pickle("./DataFrames/dfethereum")
+        CryptoData = pd.read_pickle("./data_stores/dfethereum")
     elif dropdown == 'WAVES':
-        CryptoData = pd.read_pickle("./DataFrames/dfwaves")
+        CryptoData = pd.read_pickle("./data_stores/dfwaves")
         
-    values = px.scatter(CryptoData, x='Datum', y='Wert', trendline='rolling', trendline_options=dict(window=7), trendline_color_override="crimson", template='plotly_dark') 
+    values = px.line(CryptoData, x='Date', y=['BTC', 'ETH', 'WAVES', 'SP500'], template='plotly_dark')  
+    values.update_layout(legend_title_text='')
 
-    values['data'][0]['showlegend']=True
-    values['data'][1]['showlegend']=True
-    values['data'][0]['name']='Waves'
-    values['data'][1]['name']='MA 7'
+    #values['data'][0]['showlegend']=True
+    #values['data'][1]['showlegend']=True
+    #values['data'][0]['name']='Waves'
+    #values['data'][1]['name']='MA 7'
 
     values.update_traces(mode="lines", hovertemplate=None)
     values.update_layout(hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))

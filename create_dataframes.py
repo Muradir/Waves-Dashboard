@@ -1,5 +1,6 @@
 import pandas as pd
-from database_depr import Database
+import numpy as np
+from data_stores.database import Database
 
 
 class CreateDataFrames:
@@ -8,24 +9,24 @@ class CreateDataFrames:
         # Erzeuge eine leere Liste.
         usdSQL = []
         # Rufe Daten aus der SQL per Select Befehl ab.
-        rows = Database().executeSelectQuery(tableName='vw_report_waves_market_prices')
+        rows = Database().executeSelectQuery(tableName='report_marketPricesInUsd')
         # Übergebe die gesammelten Daten aus der SQL an die Liste.
         for row in rows:
             usdSQL.append(list(row))
-            labels = ['Datum', 'Wert']
+            labels = ['Date', 'BTC', 'ETH', 'WAVES', 'SP500']
             # Übertrage die gesammelten Daten an den Dataframe.
             dfusd = pd.DataFrame.from_records(usdSQL, columns=labels)
-            # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-            dfusd['Wert'] = dfusd['Wert'].apply(pd.to_numeric)
-            dfusd['Datum'] = dfusd['Datum'].apply(pd.to_datetime)
+        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
+        dfusd['BTC'] = dfusd['BTC'].apply(pd.to_numeric)
+        dfusd['ETH'] = dfusd['ETH'].apply(pd.to_numeric)
+        dfusd['WAVES'] = dfusd['WAVES'].apply(pd.to_numeric)
+        dfusd['SP500'] = dfusd['SP500'].apply(pd.to_numeric)
+        dfusd['Date'] = dfusd['Date'].apply(pd.to_datetime)
 
-        dfusd.to_pickle("./DataFrames/dfusd")
-        cryptoData = pd.read_pickle("./DataFrames/dfusd")
+        dfusd.to_pickle("./data_stores/dfusd")
         print("US-Dollar Data successfully saved to Dataframe: dfusd")
 
-        return cryptoData
-
-    def getDataframeWaves():
+    def getDataframeWAVES():
         # Erzeuge eine leere Liste.
         wavesSQL = []
         # Rufe Daten aus der SQL per Select Befehl ab.
@@ -36,17 +37,14 @@ class CreateDataFrames:
             labels = ['Datum', 'Wert']
             # Übertrage die gesammelten Daten an den Dataframe.
             dfwaves = pd.DataFrame.from_records(wavesSQL, columns=labels)
-            # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-            dfwaves['Wert'] = dfwaves['Wert'].apply(pd.to_numeric)
-            dfwaves['Datum'] = dfwaves['Datum'].apply(pd.to_datetime)
+        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
+        dfwaves['Wert'] = dfwaves['Wert'].apply(pd.to_numeric)
+        dfwaves['Datum'] = dfwaves['Datum'].apply(pd.to_datetime)
 
-        dfwaves.to_pickle("./DataFrames/dfwaves")
-        dfcryptoData = pd.read_pickle("./DataFrames/dfwaves")
+        dfwaves.to_pickle("./data_stores/dfwaves")
         print("Waves Data successfully saved to Dataframe: dfwaves")
 
-        return dfcryptoData
-
-    def getDataframeBitcoin():
+    def getDataframeBTC():
         # Erzeuge eine leere Liste.
         bitcoinSQL = []  # set an empty list
         # Rufe Daten aus der SQL per Select Befehl ab.
@@ -57,17 +55,14 @@ class CreateDataFrames:
             labels = ['Datum', 'Wert']
             # Übertrage die gesammelten Daten an den Dataframe.
             dfbitcoin = pd.DataFrame.from_records(bitcoinSQL, columns=labels)
-            # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-            dfbitcoin['Wert'] = dfbitcoin['Wert'].apply(pd.to_numeric)
-            dfbitcoin['Datum'] = dfbitcoin['Datum'].apply(pd.to_datetime)
+        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
+        dfbitcoin['Wert'] = dfbitcoin['Wert'].apply(pd.to_numeric)
+        dfbitcoin['Datum'] = dfbitcoin['Datum'].apply(pd.to_datetime)
 
-        dfbitcoin.to_pickle("./DataFrames/dfbitcoin")
-        dfcryptoData = pd.read_pickle("./DataFrames/dfbitcoin")
+        dfbitcoin.to_pickle("./data_stores/dfbitcoin")
         print("Bitcoin Data successfully saved to Dataframe: dfbitcoin")
 
-        return dfcryptoData
-
-    def getDataframeEthereum():
+    def getDataframeETH():
         # Erzeuge eine leere Liste.
         ethereumSQL = []  # set an empty list
         # Rufe Daten aus der SQL per Select Befehl ab.
@@ -78,12 +73,9 @@ class CreateDataFrames:
             labels = ['Datum', 'Wert']
             # Übertrage die gesammelten Daten an den Dataframe.
             dfethereum = pd.DataFrame.from_records(ethereumSQL, columns=labels)
-            # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-            dfethereum['Wert'] = dfethereum['Wert'].apply(pd.to_numeric)
-            dfethereum['Datum'] = dfethereum['Datum'].apply(pd.to_datetime)
+        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
+        dfethereum['Wert'] = dfethereum['Wert'].apply(pd.to_numeric)
+        dfethereum['Datum'] = dfethereum['Datum'].apply(pd.to_datetime)
 
-        dfethereum.to_pickle("./DataFrames/dfethereum")
-        dfcryptoData = pd.read_pickle("./DataFrames/dfethereum")
+        dfethereum.to_pickle("./data_stores/dfethereum")
         print("Ethereum Data successfully saved to Dataframe: dfethereum")
-
-        return dfcryptoData
