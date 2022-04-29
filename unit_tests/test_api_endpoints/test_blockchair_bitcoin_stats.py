@@ -4,9 +4,8 @@ import unittest
 #import internal folder
 import sys, os
 
-pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../backend_app/api_endpoints')
+pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../../backend_app/api_endpoints')
 sys.path.append(pathToApiEndpointsDir)
-print(sys.path)
 
 
 #import internal classes
