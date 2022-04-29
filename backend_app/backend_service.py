@@ -16,6 +16,7 @@ class Main:
         CreateDataFrames.getDataframeBTC()
         CreateDataFrames.getDataframeETH()
         CreateDataFrames.getDataframeWAVES()
+        CreateDataFrames.getDataframeCurrency()
 
     #invokes the main method
     if __name__ == "__main__":
