@@ -2,7 +2,7 @@
 import unittest
 import sys, os
 
-pathToDataProcessingDir = os.path.join(os.path.dirname(__file__), '../data_processing')
+pathToDataProcessingDir = os.path.join(os.path.dirname(__file__), '../../backend_app/data_processing')
 sys.path.append(pathToDataProcessingDir)
 
 #import internal classes

@@ -5,6 +5,8 @@
         "./data_stores",
         "./api_endpoints",
         "./backend_app/api_endpoints",
-        "./backend_app"
+        "./backend_app",
+        "./backend_app/data_stores",
+        "./backend_app/data_processing"
     ]
 }
