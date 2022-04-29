@@ -3,9 +3,9 @@ import unittest
 
 #import internal folder
 import sys, os
-testdir = os.path.dirname(__file__)
-srcdir = '../api_endpoints'
-sys.path.insert(0, os.path.abspath(os.path.join(testdir, srcdir)))
+
+pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../api_endpoints')
+sys.path.append(pathToApiEndpointsDir)
 
 #import internal classes
 from wavescap_ethereum_bitcoin import EthereumBitcoinMarketPrices
