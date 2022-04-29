@@ -8,7 +8,6 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
-from database_depr import Database
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
@@ -62,7 +61,7 @@ app.layout = dbc.Container([
 
 ##Der folgende Code wird innerhalb des Callbacks ausgeführt und "zeichnet" den Graphen.
 
-def generate_graph_waves(dropdown):
+def generate_graph(dropdown):
 
     if dropdown == 'USD':
         CryptoData = pd.read_pickle("./backend_app/data_stores/dfusd")

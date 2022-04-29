@@ -82,3 +82,22 @@ class CreateDataFrames:
 
         dfwaves.to_pickle("./backend_app/data_stores/dfwaves")
         print("Waves Data successfully saved to Dataframe: dfwaves")
+
+    def getDataframeCurrency():
+        # Erzeuge eine leere Liste.
+        currencySQL = []
+        # Rufe Daten aus der SQL per Select Befehl ab.
+        rows = Database().executeSelectQuery(tableName='report_currencyConverter')
+        # Übergebe die gesammelten Daten aus der SQL an die Liste.
+        for row in rows:
+            currencySQL.append(list(row))
+            labels = ['Date', 'USD', 'Fee', 'Currency']
+            # Übertrage die gesammelten Daten an den Dataframe.
+            dfcurrency = pd.DataFrame.from_records(currencySQL, columns=labels)
+        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
+        dfcurrency['USD'] = dfcurrency['USD'].apply(pd.to_numeric)
+        dfcurrency['Fee'] = dfcurrency['Fee'].apply(pd.to_numeric)
+        dfcurrency['Date'] = dfcurrency['Date'].apply(pd.to_datetime)
+
+        dfcurrency.to_pickle("./backend_app/data_stores/dfcurrency")
+        print("Currency Data successfully saved to Dataframe: dfcurrency")       
