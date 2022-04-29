@@ -2,6 +2,7 @@
     "python.analysis.extraPaths": [
         "./data processing",
         "./data_processing",
-        "./data_stores"
+        "./data_stores",
+        "./api_endpoints"
     ]
 }
