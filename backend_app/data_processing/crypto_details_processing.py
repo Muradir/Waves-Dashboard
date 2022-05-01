@@ -45,7 +45,7 @@ class CryptoStatsDataProcessing:
         response = requests.get(url = blockchain.getUrl()).json()
         cryptoStats = response['data']
 
-        attributes = [cryptoStats['transactions'], cryptoStats['transactions_24h'], cryptoStats['average_transaction_fee_usd_24h'], cryptoStats['market_price_usd_change_24h_percentage'], cryptoStats['market_dominance_percentage']]
+        attributes = [cryptoStats['transactions'], cryptoStats['transactions_24h'], cryptoStats['average_transaction_fee_usd_24h'], cryptoStats['market_price_usd_change_24h_percentage'], cryptoStats['market_dominance_percentage'], datetime.today().date()]
         recordsToInsert = [tuple(attributes)]
 
         Database().insertDataIntoDatabase(entity=blockchain, recordsToInsert=recordsToInsert)
