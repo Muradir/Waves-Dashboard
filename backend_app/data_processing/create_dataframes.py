@@ -100,4 +100,26 @@ class CreateDataFrames:
         dfcurrency['Date'] = dfcurrency['Date'].apply(pd.to_datetime)
 
         dfcurrency.to_pickle("./backend_app/data_stores/dfcurrency")
-        print("Currency Data successfully saved to Dataframe: dfcurrency")       
+        print("Currency Data successfully saved to Dataframe: dfcurrency")
+
+    def getDataframeDetails():
+        # Erzeuge eine leere Liste.
+        DetailsSQL = []
+        # Rufe Daten aus der SQL per Select Befehl ab.
+        rows = Database().executeSelectQuery(tableName='report_cryptoDetails')
+        # Übergebe die gesammelten Daten aus der SQL an die Liste.
+        for row in rows:
+            DetailsSQL.append(list(row))
+            labels = ['Date', 'TransactionsTotal', 'Transactions24h', 'Fee', 'PriceChange24h', 'MarketDominance', 'Currency']
+            # Übertrage die gesammelten Daten an den Dataframe.
+            dfdetails = pd.DataFrame.from_records(DetailsSQL, columns=labels)
+        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
+        dfdetails['TransactionsTotal'] = dfdetails['TransactionsTotal'].apply(pd.to_numeric)
+        dfdetails['Transactions24h'] = dfdetails['Transactions24h'].apply(pd.to_numeric)
+        dfdetails['Fee'] = dfdetails['Fee'].apply(pd.to_numeric)
+        dfdetails['PriceChange24h'] = dfdetails['PriceChange24h'].apply(pd.to_numeric)
+        dfdetails['MarketDominance'] = dfdetails['MarketDominance'].apply(pd.to_numeric)
+        dfdetails['Date'] = dfdetails['Date'].apply(pd.to_datetime)
+
+        dfdetails.to_pickle("./backend_app/data_stores/dfdetails")
+        print("Detailed Data successfully saved to Dataframe: dfdetails")
