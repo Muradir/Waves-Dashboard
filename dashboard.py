@@ -14,7 +14,7 @@ dfDetails = pd.read_pickle("./backend_app/data_stores/dfcrypto")
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
 
-## setting up the layout in HTML Code and creating the objects, that will be created in the callbacks.
+# Setting up the layout in HTML Code and creating the objects, that will be created in the callbacks.
 app.layout = dbc.Container([
     html.Div([
         html.H1("Cryptodashboard", style={'text-align': 'center'}),
@@ -80,15 +80,16 @@ app.layout = dbc.Container([
     ])
 ])
 
-## The callbacks create the prior defined objects, like Graphs, Tables or Buttons.
-## All interactive Objects will have one or more callback.
+# The callbacks create the prior defined objects, like Graphs, Tables or Buttons.
+# All interactive Objects will have one or more callbacks.
 
 @app.callback(Output('graph', 'figure'), 
             [Input('dropdownGraph', 'value')])
 
-## The following code will draw the Graph.
+# The following code will draw the Graph.
 def generate_graph(dropdown):
 
+    #choosing the correct Dataframe according to Dropdown-Value
     if dropdown == 'USD':
         CryptoData = pd.read_pickle("./backend_app/data_stores/dfusd")
     elif dropdown == 'BTC':
@@ -97,14 +98,14 @@ def generate_graph(dropdown):
         CryptoData = pd.read_pickle("./backend_app/data_stores/dfethereum")
     elif dropdown == 'WAVES':
         CryptoData = pd.read_pickle("./backend_app/data_stores/dfwaves")
-        
-    #values = px.line(CryptoData, x='Date', y=['BTC', 'ETH', 'WAVES', 'SP500'], template='plotly_dark')  
+
+    #loading the Dataframe and inserting the data into the graph          
     values = px.line(CryptoData, x='Date', y=CryptoData.columns, template='plotly_dark')
     values.update_layout(legend_title_text='')
-
+    
+    #adding functionality and styling to the graph
     values.update_traces(mode="lines", hovertemplate=None)
     values.update_layout(hovermode="x unified", plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)', hoverlabel=dict(bgcolor="gray", font_size=16, font_color="white"))
-    #waves.update_yaxes(title_text="Wert in USD")
     values.update_xaxes(
         rangeslider_visible=True,
         rangeselector=dict(
@@ -125,10 +126,11 @@ def generate_graph(dropdown):
     Input('input1', 'value'),
     Input('dropdownCurrency', 'value'))
 
-## The following code handles the Curencu Converter.
+## The following code handles the Currency Converter.
 def update_output(input1, dropdownCurrency):
     UsdValue = float
 
+    #choosing the correct USD Value according to dropdown-field
     CurrencyData = pd.read_pickle("./backend_app/data_stores/dfconverter")
     if dropdownCurrency == 'BTC':
         UsdValue = float(CurrencyData.loc[0].at['USD'])
@@ -137,9 +139,8 @@ def update_output(input1, dropdownCurrency):
     elif dropdownCurrency == 'WAVES':
         UsdValue = float(CurrencyData.loc[2].at['USD'])
 
+    #returnign the calculated value (value of chosen Asset * amount of chosen assets)
     return u'It will cost you {} USD.'.format(round(UsdValue*float(input1), 2))
-
-
 
 if __name__ == "__main__":
     app.run_server(debug=True)
