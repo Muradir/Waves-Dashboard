@@ -1,6 +1,6 @@
 import numbers
 from dash import Dash, html, dcc
-from dash.dependencies import Output, Input
+from dash.dependencies import Output, Input, State
 from numpy import number
 import plotly.express as px
 import plotly.graph_objects as go
@@ -38,19 +38,24 @@ app.layout = dbc.Container([
             dcc.Graph(id='graph', figure=go.Figure(layout=dict(plot_bgcolor='rgba(90, 90, 90, 90)', paper_bgcolor='rgba(50, 50, 50, 50)'))),
         ],style={'backgroundColor':'#323232'}),
 
-        html.Div(style={"width": '20%'}, children=[
-            html.I("Input Dollar Value:"),
+        html.Div(children=[
+            html.I("Input asset amount and choose asset:"),
             html.Br(),
-            dcc.Input(id="input1", type="number", placeholder="", debounce=True),
+            dcc.Input(id="input1", type="number", value=0, debounce=True, required=True),
             dcc.Dropdown(
                 id='dropdownCurrency',
                 options=[
                     {'label': 'BTC', 'value': 'BTC'},
                     {'label': 'ETH', 'value': 'ETH'},
                     {'label': 'WAVES', 'value': 'WAVES'},
-                ]),
+                ],
+                value='BTC',
+                clearable=False,
+                searchable=False,
+                style={'color':'#323232'},
+                ),
             html.Div(id="output")
-        ]),   
+        ],style={'backgroundColor':'#323232', "width": '33%'}),   
     ])    
 ])
 
@@ -96,12 +101,21 @@ def generate_graph(dropdown):
 
 @app.callback(
     Output('output', 'children'),
-    Input('dropdownCurrency', 'value'),
-    Input('input1', 'value')
-)
+    Input('input1', 'value'),
+    Input('dropdownCurrency', 'value'))
 
-def update_output(input1):
-    return u'Input 1 {}'.format(input1)
+def update_output(input1, dropdownCurrency):
+    UsdValue = int
+
+    CurrencyData = pd.read_pickle("./backend_app/data_stores/dfcurrency")
+    if dropdownCurrency == 'BTC':
+        UsdValue = int(CurrencyData.loc[0].at['USD'])
+    elif dropdownCurrency == 'ETH':
+        UsdValue = int(CurrencyData.loc[1].at['USD'])
+    elif dropdownCurrency == 'WAVES':
+        UsdValue = int(CurrencyData.loc[2].at['USD'])
+
+    return u'It will cost you {} USD.'.format(UsdValue*int(input1))
 
 if __name__ == "__main__":
     app.run_server(debug=True)
