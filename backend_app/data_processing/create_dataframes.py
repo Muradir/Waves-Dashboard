@@ -49,7 +49,7 @@ class CreateDataFrames:
             df['Total Assets'] = df['Total Assets'].apply(pd.to_numeric)
             df['Transactions 24h'] = df['Transactions 24h'].apply(pd.to_numeric)
             df['Fee'] = df['Fee'].apply(pd.to_numeric)
-            df['Rate of Change 24h'] = df['Rate of Change 24h'].apply(pd.to_numeric)
+            df['Rate of Change % 24h'] = df['Rate of Change % 24h'].apply(pd.to_numeric)
             df['Market Dominance %'] = df['Market Dominance %'].apply(pd.to_numeric)
             df['Currency'] = df['Currency']
         else:
@@ -63,7 +63,7 @@ class CreateDataFrames:
 
     def __getLabelsByChoice(self, currency):
         allLabels = ['Date', 'BTC', 'ETH', 'WAVES',
-                     'SP500', 'USD', 'Fee', 'Currency', 'Total Assets', 'Transactions 24h', 'Rate of Change 24h', 'Market Dominance %']
+                     'SP500', 'USD', 'Fee', 'Currency', 'Total Assets', 'Transactions 24h', 'Rate of Change % 24h', 'Market Dominance %']
         specLabel = []
         if currency == 'Bitcoin':
             specLabel.append(allLabels[0])
