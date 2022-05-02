@@ -1,15 +1,17 @@
+#Author: Isabella Lambirth
+#Description: This file tests the functionality of public methods in class WavesStats
+
 #import external modules
 import unittest
-
-#import internal folder
 import sys, os
 
+#navigation to repository folder on same hirachy level
 pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../../backend_app/api_endpoints')
 sys.path.append(pathToApiEndpointsDir)
 
-
 #import internal classes
 from blockchair_waves_stats import WavesStats
+
 
 class TestWavesStats(unittest.TestCase): 
 

@@ -1,15 +1,17 @@
+#Author: Isabella Lambirth
+#Description: This file tests the functionality of public methods in class BitcoinUsdMarketPrices
+
 #import external modules
 import unittest
-
-#import internal folder
 import sys, os
 
+#navigation to repository folder on same hirachy level
 pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../../backend_app/api_endpoints')
 sys.path.append(pathToApiEndpointsDir)
 
-
 #import internal classes
 from wavescap_bitcoin_usd import BitcoinUsdMarketPrices
+
 
 class TestBitcoinUsdMarketPrices(unittest.TestCase): 
 

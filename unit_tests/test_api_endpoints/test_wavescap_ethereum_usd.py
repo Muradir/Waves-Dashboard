@@ -1,17 +1,20 @@
+#Author: Isabella Lambirth
+#Description: This file tests the functionality of public methods in class EthereumUsdMarketPrices
+
+
 #import external modules
 import unittest
-
-#import internal folder
 import sys, os
 
+#navigation to repository folder on same hirachy level
 pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../../backend_app/api_endpoints')
 sys.path.append(pathToApiEndpointsDir)
-
 
 #import internal classes
 from wavescap_ethereum_usd import EthereumUsdMarketPrices
 
-class TestEthereumBitcoinMarketPrices(unittest.TestCase): 
+
+class TestEthereumUsdMarketPrices(unittest.TestCase): 
 
     def test_getUrl(self):
         self.assertEqual(EthereumUsdMarketPrices().getUrl(),'https://wavescap.com/api/chart/asset/474jTeYx2r2Va35794tCScAXWJG9hU2HcgxzMowaZUnu-usd-n-all.json')

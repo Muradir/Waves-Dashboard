@@ -1,3 +1,6 @@
+#Author: Lars Brebeck
+#Description: This file manages the whole interaction with the mysql cloud database
+
 #import external modules
 import mysql.connector
 from mysql.connector import Error
@@ -31,7 +34,7 @@ class Database:
         return 'Data of entity ' + entity.getDbTableName() + ' was inserted successfully into Database!'
 
 
-    #private class methods, creates a connection to the database
+    #private class method, creates a connection to the database
     def __getDatabaseConnection(self):
         try:
             connection = mysql.connector.connect(

@@ -1,3 +1,6 @@
+#Author: Lars Brebeck
+#Description: This file holds all important information about an api-endpoint and makes them accessible via public getter methods
+
 class WavesStats:
 
     #private class attributes

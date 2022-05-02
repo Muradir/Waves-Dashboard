@@ -1,21 +1,24 @@
+#Author: Lars Brebeck
+#Description: This file manages the data movement from api-endpoint to database
+
 #import external modules
 from datetime import datetime
 import requests
 import sys, os
 
-
+#navigation to repository folder on same hirachy level
 pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../api_endpoints')
 sys.path.append(pathToApiEndpointsDir)
 
 pathToDataStoresDir = os.path.join(os.path.dirname(__file__), '../data_stores')
 sys.path.append(pathToDataStoresDir)
 
-
 #import internal classes
 from database import Database
 from blockchair_bitcoin_stats import BitcoinStats
 from blockchair_ethereum_stats import EthereumStats
 from blockchair_waves_stats import WavesStats
+
 
 class CryptoStatsDataProcessing:
     

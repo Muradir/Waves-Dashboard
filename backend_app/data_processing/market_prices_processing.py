@@ -1,3 +1,6 @@
+#Author: Lars Brebeck
+#Description: This file manages the data movement from api-endpoint to database 
+
 #import external modules
 import requests
 from datetime import date
@@ -5,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 import os, sys
 
+#navigation to repository folder on same hirachy level
 pathToApiEndpointsDir = os.path.join(os.path.dirname(__file__), '../api_endpoints')
 sys.path.append(pathToApiEndpointsDir)
 

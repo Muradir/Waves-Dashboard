@@ -1,7 +1,11 @@
+#Author: Lars Brebeck
+#Description: This file tests the functionality of public methods in class Database
+
 #import external modules
 import unittest
 import sys, os
 
+#navigation to repository folder on same hirachy level
 pathToDataStoresDir = os.path.join(os.path.dirname(__file__), '../../backend_app/data_stores')
 sys.path.append(pathToDataStoresDir)
 print(sys.path)
@@ -10,7 +14,7 @@ print(sys.path)
 from database import Database
 from test_data import TestData
 
-#testing the functionality of the database
+
 class TestDatabase(unittest.TestCase):
 
     def test_insertDataIntoDatabase(self):

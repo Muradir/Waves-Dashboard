@@ -1,3 +1,6 @@
+#Author: Lars Brebeck
+#Description: This file holds information about the table "test_table" inside the database, that is created for testing the database functionality
+
 class TestData:
 
     #private class attributes
