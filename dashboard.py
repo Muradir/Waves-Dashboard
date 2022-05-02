@@ -1,4 +1,4 @@
-#Author: Pascal Hildebrandt
+#Author: Pascal Hildebrandt, Genar Yildiran
 #Description: This file creates the Dashboard and its components and interacts with all the backend data
 
 from dash import Dash, html, dcc, dash_table
@@ -9,16 +9,15 @@ import plotly.graph_objects as go
 import pandas as pd
 import dash_bootstrap_components as dbc
 
-dfDetails = pd.read_pickle("./backend_app/data_stores/dfcrypto")
-
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
-
+# loading a Dataframe, that is used to generate a DataTable inside the App layout
+dfDetails = pd.read_pickle("./backend_app/data_stores/dfcrypto")
 # Setting up the layout in HTML Code and creating the objects, that will be created in the callbacks.
 app.layout = dbc.Container([
     html.Div([
         html.H1("Cryptodashboard", style={'text-align': 'center'}),
-        
+        # Div Container for the Graph
         html.Div([
             html.H1("Market prices", style={'text-align': 'center'}),
             dcc.Interval(id='update_interval', interval=1*30000),
@@ -41,6 +40,7 @@ app.layout = dbc.Container([
         ],style={'backgroundColor':'#323232'}),
 
         html.Div(children=[
+            # Div Container for the currency converter
             html.Div(children=[
                 html.H1("Converter", style={'text-align': 'center'}),
                 html.I("Input asset amount and choose asset:"),
@@ -59,7 +59,7 @@ app.layout = dbc.Container([
                     ),
                 html.Div(id="output"),
             ],style={'backgroundColor':'#323232', "width": '25%', 'display':'inline-block', 'vertical-align':'top'}), 
-
+            # Div container for the Crypto Details Table
             html.Div([
                 html.H1("Crypto-Asset-Information", style={'text-align': 'center'}),
                 dash_table.DataTable(
