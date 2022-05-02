@@ -1,13 +1,9 @@
-import numbers
 from dash import Dash, html, dcc, dash_table
-from dash.dependencies import Output, Input, State
-from numpy import number
+from dash.dependencies import Output, Input
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import pandas as pd
 import dash_bootstrap_components as dbc
-from dash_bootstrap_templates import load_figure_template
 
 dfDetails = pd.read_pickle("./backend_app/data_stores/dfcrypto")
 
@@ -66,13 +62,15 @@ app.layout = dbc.Container([
                     dfDetails.to_dict('records'),
                     [{"name": i, "id": i} for i in dfDetails.columns],
                     style_header={
-                        'backgroundColor': 'rgb(30, 30, 30)',
+                        'backgroundColor': 'rgb(90, 90, 90)',
                         'color': 'white'
                     },
                     style_data={
-                      'backgroundColor': 'rgb(50, 50, 50)',
-                      'color': 'white'
-                    }
+                        'backgroundColor': 'rgb(50, 50, 50)',
+                        'color': 'white'
+                    },
+                    hidden_columns=['Date'],
+                    css = [{'selector': 'show-hide', 'rule': 'display: none'}],
                 )
             ],style={'backgroundColor':'#323232', "width": '75%', 'display':'inline-block'})    
         ])

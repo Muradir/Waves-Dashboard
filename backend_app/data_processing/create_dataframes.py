@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import sys,os
 
 pathToDataStoresDir = os.path.join(os.path.dirname(__file__), '../data_stores')

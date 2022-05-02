@@ -9,19 +9,9 @@ class Main:
     # main method of backend service programm
     def main():
         print("Wir schaffen das!")
-        # MarketPricesDataProcessing().start()
-        # CryptoStatsDataProcessing().start()
-        # CreateDataFrames.getDataframeUSD()
-        # CreateDataFrames.getDataframeBTC()
-        # CreateDataFrames.getDataframeETH()
-        # CreateDataFrames.getDataframeWAVES()
-
-        # MarketPricesDataProcessing().start()
-        # CryptoStatsDataProcessing().start()
-        # CreateDataFrames.getDataframeUSD()
-        # CreateDataFrames.getDataframeBTC()
-        # CreateDataFrames.getDataframeETH()
-        # CreateDataFrames.getDataframeWAVES()
+        
+        MarketPricesDataProcessing().start()
+        CryptoStatsDataProcessing().start()
         CreateDataFrames().start()
 
     # invokes the main method
