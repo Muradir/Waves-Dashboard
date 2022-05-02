@@ -1,13 +1,17 @@
 import pandas as pd
 import numpy as np
-from data_stores.database import Database
+import sys,os
 
-# Authors: Pascal Hildebrandt, Genar Yildiran
-# Description: This class is responsible for creating and saving Dataframes.
+pathToDataStoresDir = os.path.join(os.path.dirname(__file__), '../data_stores')
+sys.path.append(pathToDataStoresDir)
+
+from database import Database
+
+#Authors: Pascal Hildebrandt, Genar Yildiran
+#Description: This class is responsible for creating and saving Dataframes.
 #             The start method is creating one dataframe for each purpose
-#             or rather currency. The Dataframes are later on used for the
+#             or rather currency. The Dataframes are later on used for the 
 #             dashboard to create the graphs and the converter.
-
 
 class CreateDataFrames:
 
