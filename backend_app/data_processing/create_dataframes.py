@@ -52,7 +52,6 @@ class CreateDataFrames:
             df['PriceChangePercentage24h'] = df['PriceChangePercentage24h'].apply(pd.to_numeric)
             df['MarketDominancePercentage'] = df['MarketDominancePercentage'].apply(pd.to_numeric)
             df['Currency'] = df['Currency']
-            df['Date'] = df['Date'].apply(pd.to_datetime)
         else:
             df[labels[2]] = df[labels[2]].apply(pd.to_numeric)
             df[labels[1]] = df[labels[1]].apply(pd.to_numeric)
@@ -90,7 +89,6 @@ class CreateDataFrames:
             specLabel.append(allLabels[6])
             specLabel.append(allLabels[7])
         elif currency == 'Crypto':
-            specLabel.append(allLabels[0])
             specLabel.append(allLabels[8])
             specLabel.append(allLabels[9])
             specLabel.append(allLabels[6])
