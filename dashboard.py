@@ -1,5 +1,5 @@
 import numbers
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, dash_table
 from dash.dependencies import Output, Input, State
 from numpy import number
 import plotly.express as px
@@ -8,6 +8,8 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
+
+dfDetails = pd.read_pickle("./backend_app/data_stores/dfcrypto")
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
@@ -39,24 +41,42 @@ app.layout = dbc.Container([
         ],style={'backgroundColor':'#323232'}),
 
         html.Div(children=[
-            html.I("Input asset amount and choose asset:"),
-            html.Br(),
-            dcc.Input(id="input1", type="number", value=0, debounce=True, required=True),
-            dcc.Dropdown(
-                id='dropdownCurrency',
-                options=[
-                    {'label': 'BTC', 'value': 'BTC'},
-                    {'label': 'ETH', 'value': 'ETH'},
-                    {'label': 'WAVES', 'value': 'WAVES'},
-                ],
-                value='BTC',
-                clearable=False,
-                searchable=False,
-                style={'color':'#323232'},
-                ),
-            html.Div(id="output")
-        ],style={'backgroundColor':'#323232', "width": '33%'}),   
-    ])    
+            html.Div(children=[
+                html.H1("Converter", style={'text-align': 'center'}),
+                html.I("Input asset amount and choose asset:"),
+                dcc.Input(id="input1", type="number", value=0, debounce=True, required=True),
+                dcc.Dropdown(
+                    id='dropdownCurrency',
+                    options=[
+                        {'label': 'BTC', 'value': 'BTC'},
+                        {'label': 'ETH', 'value': 'ETH'},
+                        {'label': 'WAVES', 'value': 'WAVES'},
+                    ],
+                    value='BTC',
+                    clearable=False,
+                    searchable=False,
+                    style={'color':'#323232'},
+                    ),
+                html.Div(id="output"),
+            ],style={'backgroundColor':'#323232', "width": '25%', 'display':'inline-block', 'vertical-align':'top'}), 
+
+            html.Div([
+                html.H1("Crypto-Asset-Information", style={'text-align': 'center'}),
+                dash_table.DataTable(
+                    dfDetails.to_dict('records'),
+                    [{"name": i, "id": i} for i in dfDetails.columns],
+                    style_header={
+                        'backgroundColor': 'rgb(30, 30, 30)',
+                        'color': 'white'
+                    },
+                    style_data={
+                      'backgroundColor': 'rgb(50, 50, 50)',
+                      'color': 'white'
+                    }
+                )
+            ],style={'backgroundColor':'#323232', "width": '75%', 'display':'inline-block'})    
+        ])
+    ])
 ])
 
 ##Durch die Callbacks werden die Graphen mit Hilfe des Plotly Dash Frameworks erzeugt. Im App Layout werden dann nach dem Aufrufen der Callbacks die Graphen aktualisiert und angezeigt.
@@ -105,17 +125,19 @@ def generate_graph(dropdown):
     Input('dropdownCurrency', 'value'))
 
 def update_output(input1, dropdownCurrency):
-    UsdValue = int
+    UsdValue = float
 
-    CurrencyData = pd.read_pickle("./backend_app/data_stores/dfcurrency")
+    CurrencyData = pd.read_pickle("./backend_app/data_stores/dfconverter")
     if dropdownCurrency == 'BTC':
-        UsdValue = int(CurrencyData.loc[0].at['USD'])
+        UsdValue = float(CurrencyData.loc[0].at['USD'])
     elif dropdownCurrency == 'ETH':
-        UsdValue = int(CurrencyData.loc[1].at['USD'])
+        UsdValue = float(CurrencyData.loc[1].at['USD'])
     elif dropdownCurrency == 'WAVES':
-        UsdValue = int(CurrencyData.loc[2].at['USD'])
+        UsdValue = float(CurrencyData.loc[2].at['USD'])
 
-    return u'It will cost you {} USD.'.format(UsdValue*int(input1))
+    return u'It will cost you {} USD.'.format(round(UsdValue*float(input1), 2))
+
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
