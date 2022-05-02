@@ -1,103 +1,108 @@
 import pandas as pd
-import numpy as np
-from data_stores.database import Database
+import sys,os
 
+pathToDataStoresDir = os.path.join(os.path.dirname(__file__), '../data_stores')
+sys.path.append(pathToDataStoresDir)
+
+from database import Database
+
+#Authors: Pascal Hildebrandt, Genar Yildiran
+#Description: This class is responsible for creating and saving Dataframes.
+#             The start method is creating one dataframe for each purpose
+#             or rather currency. The Dataframes are later on used for the 
+#             dashboard to create the graphs and the converter.
 
 class CreateDataFrames:
 
-    def getDataframeUSD():
-        # Erzeuge eine leere Liste.
-        usdSQL = []
-        # Rufe Daten aus der SQL per Select Befehl ab.
-        rows = Database().executeSelectQuery(tableName='report_marketPricesInUsd')
-        # Übergebe die gesammelten Daten aus der SQL an die Liste.
+    def start(self):
+        self.__getDataframeByChoice('Bitcoin')
+        self.__getDataframeByChoice('Ethereum')
+        self.__getDataframeByChoice('Waves')
+        self.__getDataframeByChoice('Usd')
+        self.__getDataframeByChoice('Converter')
+        self.__getDataframeByChoice('Crypto')
+
+    def __getDataframeByChoice(self, currency: str):
+        # Creating empty list.
+        SQL = []  # set an empty list
+        # Get data from SQL database.
+        rows = Database().executeSelectQuery(
+            tableName=self.__getTableName(currency=currency))
+        # Pass the collected data from SQL database to the list.
         for row in rows:
-            usdSQL.append(list(row))
-            labels = ['Date', 'BTC', 'ETH', 'WAVES', 'SP500']
-            # Übertrage die gesammelten Daten an den Dataframe.
-            dfusd = pd.DataFrame.from_records(usdSQL, columns=labels)
-        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-        dfusd['BTC'] = dfusd['BTC'].apply(pd.to_numeric)
-        dfusd['ETH'] = dfusd['ETH'].apply(pd.to_numeric)
-        dfusd['WAVES'] = dfusd['WAVES'].apply(pd.to_numeric)
-        dfusd['SP500'] = dfusd['SP500'].apply(pd.to_numeric)
-        dfusd['Date'] = dfusd['Date'].apply(pd.to_datetime)
+            SQL.append(list(row))
+            labels = self.__getLabelsByChoice(currency=currency)
+            # Transfer the collected data to the dataframe.
+            df = pd.DataFrame.from_records(SQL, columns=labels)
+        # Format the dataframe accordingly for subsequent use in the graph.
+        if(currency == 'Converter'):
+            df['USD'] = df['USD'].apply(pd.to_numeric)
+            df['Fee'] = df['Fee'].apply(pd.to_numeric)
+            df['Date'] = df['Date'].apply(pd.to_datetime)
+        elif currency == 'Usd':
+            df['BTC'] = df['BTC'].apply(pd.to_numeric)
+            df['ETH'] = df['ETH'].apply(pd.to_numeric)
+            df['WAVES'] = df['WAVES'].apply(pd.to_numeric)
+            df['SP500'] = df['SP500'].apply(pd.to_numeric)
+            df['Date'] = df['Date'].apply(pd.to_datetime)
+        elif currency == 'Crypto':
+            df['Total'] = df['Total'].apply(pd.to_numeric)
+            df['Transactions24h'] = df['Transactions24h'].apply(pd.to_numeric)
+            df['Fee'] = df['Fee'].apply(pd.to_numeric)
+            df['PriceChangePercentage24h'] = df['PriceChangePercentage24h'].apply(pd.to_numeric)
+            df['MarketDominancePercentage'] = df['MarketDominancePercentage'].apply(pd.to_numeric)
+            df['Currency'] = df['Currency']
+            df['Date'] = df['Date'].apply(pd.to_datetime)
+        else:
+            df[labels[2]] = df[labels[2]].apply(pd.to_numeric)
+            df[labels[1]] = df[labels[1]].apply(pd.to_numeric)
+            df[labels[0]] = df[labels[0]].apply(pd.to_datetime)
 
-        dfusd.to_pickle("./backend_app/data_stores/dfusd")
-        print("US-Dollar Data successfully saved to Dataframe: dfusd")
+        df.to_pickle("./backend_app/data_stores/df" + str(currency.lower()))
+        print(str(currency) +
+              " Data successfully saved to Dataframe: df" + str(currency.lower()))
 
-    def getDataframeBTC():
-        # Erzeuge eine leere Liste.
-        bitcoinSQL = []  # set an empty list
-        # Rufe Daten aus der SQL per Select Befehl ab.
-        rows = Database().executeSelectQuery(tableName='report_marketPricesInBitcoin')
-        # Übergebe die gesammelten Daten aus der SQL an die Liste.
-        for row in rows:
-            bitcoinSQL.append(list(row))
-            labels = ['Date', 'ETH', 'WAVES']
-            # Übertrage die gesammelten Daten an den Dataframe.
-            dfbitcoin = pd.DataFrame.from_records(bitcoinSQL, columns=labels)
-        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-        dfbitcoin['ETH'] = dfbitcoin['ETH'].apply(pd.to_numeric)
-        dfbitcoin['WAVES'] = dfbitcoin['WAVES'].apply(pd.to_numeric)
-        dfbitcoin['Date'] = dfbitcoin['Date'].apply(pd.to_datetime)
+    def __getLabelsByChoice(self, currency):
+        allLabels = ['Date', 'BTC', 'ETH', 'WAVES',
+                     'SP500', 'USD', 'Fee', 'Currency', 'Total', 'Transactions24h', 'PriceChangePercentage24h', 'MarketDominancePercentage']
+        specLabel = []
+        if currency == 'Bitcoin':
+            specLabel.append(allLabels[0])
+            specLabel.append(allLabels[2])
+            specLabel.append(allLabels[3])
+        elif currency == 'Ethereum':
+            specLabel.append(allLabels[0])
+            specLabel.append(allLabels[1])
+            specLabel.append(allLabels[3])
+        elif currency == 'Waves':
+            specLabel.append(allLabels[0])
+            specLabel.append(allLabels[1])
+            specLabel.append(allLabels[2])
+        elif currency == 'Usd':
+            specLabel.append(allLabels[0])
+            specLabel.append(allLabels[1])
+            specLabel.append(allLabels[2])
+            specLabel.append(allLabels[3])
+            specLabel.append(allLabels[4])
+        elif currency == 'Converter':
+            specLabel.append(allLabels[0])
+            specLabel.append(allLabels[5])
+            specLabel.append(allLabels[6])
+            specLabel.append(allLabels[7])
+        elif currency == 'Crypto':
+            specLabel.append(allLabels[0])
+            specLabel.append(allLabels[8])
+            specLabel.append(allLabels[9])
+            specLabel.append(allLabels[6])
+            specLabel.append(allLabels[10])
+            specLabel.append(allLabels[11])
+            specLabel.append(allLabels[7])
+        return specLabel
 
-        dfbitcoin.to_pickle("./backend_app/data_stores/dfbitcoin")
-        print("Bitcoin Data successfully saved to Dataframe: dfbitcoin")
-
-    def getDataframeETH():
-        # Erzeuge eine leere Liste.
-        ethereumSQL = []  # set an empty list
-        # Rufe Daten aus der SQL per Select Befehl ab.
-        rows = Database().executeSelectQuery(tableName='report_marketPricesInEthereum')
-        # Übergebe die gesammelten Daten aus der SQL an die Liste.
-        for row in rows:
-            ethereumSQL.append(list(row))
-            labels = ['Date', 'WAVES', 'BTC']
-            # Übertrage die gesammelten Daten an den Dataframe.
-            dfethereum = pd.DataFrame.from_records(ethereumSQL, columns=labels)
-        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-        dfethereum['WAVES'] = dfethereum['WAVES'].apply(pd.to_numeric)
-        dfethereum['BTC'] = dfethereum['BTC'].apply(pd.to_numeric)
-        dfethereum['Date'] = dfethereum['Date'].apply(pd.to_datetime)
-
-        dfethereum.to_pickle("./backend_app/data_stores/dfethereum")
-        print("Ethereum Data successfully saved to Dataframe: dfethereum")
-
-    def getDataframeWAVES():
-        # Erzeuge eine leere Liste.
-        wavesSQL = []
-        # Rufe Daten aus der SQL per Select Befehl ab.
-        rows = Database().executeSelectQuery(tableName='report_marketPricesInWaves')
-        # Übergebe die gesammelten Daten aus der SQL an die Liste.
-        for row in rows:
-            wavesSQL.append(list(row))
-            labels = ['Date', 'ETH', 'BTC']
-            # Übertrage die gesammelten Daten an den Dataframe.
-            dfwaves = pd.DataFrame.from_records(wavesSQL, columns=labels)
-        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-        dfwaves['ETH'] = dfwaves['ETH'].apply(pd.to_numeric)
-        dfwaves['BTC'] = dfwaves['BTC'].apply(pd.to_numeric)
-        dfwaves['Date'] = dfwaves['Date'].apply(pd.to_datetime)
-
-        dfwaves.to_pickle("./backend_app/data_stores/dfwaves")
-        print("Waves Data successfully saved to Dataframe: dfwaves")
-
-    def getDataframeCurrency():
-        # Erzeuge eine leere Liste.
-        currencySQL = []
-        # Rufe Daten aus der SQL per Select Befehl ab.
-        rows = Database().executeSelectQuery(tableName='report_currencyConverter')
-        # Übergebe die gesammelten Daten aus der SQL an die Liste.
-        for row in rows:
-            currencySQL.append(list(row))
-            labels = ['Date', 'USD', 'Fee', 'Currency']
-            # Übertrage die gesammelten Daten an den Dataframe.
-            dfcurrency = pd.DataFrame.from_records(currencySQL, columns=labels)
-        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-        dfcurrency['USD'] = dfcurrency['USD'].apply(pd.to_numeric)
-        dfcurrency['Fee'] = dfcurrency['Fee'].apply(pd.to_numeric)
-        dfcurrency['Date'] = dfcurrency['Date'].apply(pd.to_datetime)
-
-        dfcurrency.to_pickle("./backend_app/data_stores/dfcurrency")
-        print("Currency Data successfully saved to Dataframe: dfcurrency")       
+    def __getTableName(self, currency: str):
+        if currency == 'Converter':
+            return 'report_currencyConverter'
+        elif currency == 'Crypto':
+            return 'report_cryptoDetails'
+        else:
+            return 'report_marketPricesIn' + currency
