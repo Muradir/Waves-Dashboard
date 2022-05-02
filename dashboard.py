@@ -1,4 +1,8 @@
+#Author: Pascal Hildebrandt
+#Description: This file creates the Dashboard and interacts with all the backend data
+
 from dash import Dash, html, dcc, dash_table
+from dash_table.Format import Format
 from dash.dependencies import Output, Input
 import plotly.express as px
 import plotly.graph_objects as go
@@ -10,7 +14,7 @@ dfDetails = pd.read_pickle("./backend_app/data_stores/dfcrypto")
 app = Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
 
-## Im folgenden Abschnitt wird das Layout des Dashboards festegelegt und mit HTML-Code definiert.
+## setting up the layout in HTML Code and creating the objects, that will be created in the callbacks.
 app.layout = dbc.Container([
     html.Div([
         html.H1("Cryptodashboard", style={'text-align': 'center'}),
@@ -60,7 +64,8 @@ app.layout = dbc.Container([
                 html.H1("Crypto-Asset-Information", style={'text-align': 'center'}),
                 dash_table.DataTable(
                     dfDetails.to_dict('records'),
-                    [{"name": i, "id": i} for i in dfDetails.columns],
+                    columns = [{"name": i, "id": i,
+                                "type": "numeric", "format": Format(group=",", precision=2, scheme="f")}for i in dfDetails.columns],
                     style_header={
                         'backgroundColor': 'rgb(90, 90, 90)',
                         'color': 'white'
@@ -69,21 +74,19 @@ app.layout = dbc.Container([
                         'backgroundColor': 'rgb(50, 50, 50)',
                         'color': 'white'
                     },
-                    hidden_columns=['Date'],
-                    css = [{'selector': 'show-hide', 'rule': 'display: none'}],
                 )
-            ],style={'backgroundColor':'#323232', "width": '75%', 'display':'inline-block'})    
-        ])
+            ],style={'margin-left': '30px', 'backgroundColor':'#323232', "width": '70%', 'display':'inline-block'})    
+        ], style = {'backgroundColor':'#323232'})
     ])
 ])
 
-##Durch die Callbacks werden die Graphen mit Hilfe des Plotly Dash Frameworks erzeugt. Im App Layout werden dann nach dem Aufrufen der Callbacks die Graphen aktualisiert und angezeigt.
+## The callbacks create the prior defined objects, like Graphs, Tables or Buttons.
+## All interactive Objects will have one or more callback.
 
 @app.callback(Output('graph', 'figure'), 
             [Input('dropdownGraph', 'value')])
 
-##Der folgende Code wird innerhalb des Callbacks ausgeführt und "zeichnet" den Graphen.
-
+## The following code will draw the Graph.
 def generate_graph(dropdown):
 
     if dropdown == 'USD':
@@ -122,6 +125,7 @@ def generate_graph(dropdown):
     Input('input1', 'value'),
     Input('dropdownCurrency', 'value'))
 
+## The following code handles the Curencu Converter.
 def update_output(input1, dropdownCurrency):
     UsdValue = float
 

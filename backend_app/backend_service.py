@@ -12,8 +12,8 @@ class Main:
     def main():
         print("Wir schaffen das!")
         
-        MarketPricesDataProcessing().start()
-        CryptoStatsDataProcessing().start()
+        #MarketPricesDataProcessing().start()
+        #CryptoStatsDataProcessing().start()
         CreateDataFrames().start()
 
     # invokes the main method

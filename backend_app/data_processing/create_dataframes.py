@@ -46,11 +46,11 @@ class CreateDataFrames:
             df['SP500'] = df['SP500'].apply(pd.to_numeric)
             df['Date'] = df['Date'].apply(pd.to_datetime)
         elif currency == 'Crypto':
-            df['Total'] = df['Total'].apply(pd.to_numeric)
-            df['Transactions24h'] = df['Transactions24h'].apply(pd.to_numeric)
+            df['Total Assets'] = df['Total Assets'].apply(pd.to_numeric)
+            df['Transactions 24h'] = df['Transactions 24h'].apply(pd.to_numeric)
             df['Fee'] = df['Fee'].apply(pd.to_numeric)
-            df['PriceChangePercentage24h'] = df['PriceChangePercentage24h'].apply(pd.to_numeric)
-            df['MarketDominancePercentage'] = df['MarketDominancePercentage'].apply(pd.to_numeric)
+            df['Rate of Change 24h'] = df['Rate of Change 24h'].apply(pd.to_numeric)
+            df['Market Dominance %'] = df['Market Dominance %'].apply(pd.to_numeric)
             df['Currency'] = df['Currency']
         else:
             df[labels[2]] = df[labels[2]].apply(pd.to_numeric)
@@ -63,7 +63,7 @@ class CreateDataFrames:
 
     def __getLabelsByChoice(self, currency):
         allLabels = ['Date', 'BTC', 'ETH', 'WAVES',
-                     'SP500', 'USD', 'Fee', 'Currency', 'Total', 'Transactions24h', 'PriceChangePercentage24h', 'MarketDominancePercentage']
+                     'SP500', 'USD', 'Fee', 'Currency', 'Total Assets', 'Transactions 24h', 'Rate of Change 24h', 'Market Dominance %']
         specLabel = []
         if currency == 'Bitcoin':
             specLabel.append(allLabels[0])
