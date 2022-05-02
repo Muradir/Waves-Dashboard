@@ -1,5 +1,5 @@
 #Author: Pascal Hildebrandt
-#Description: This file creates the Dashboard and interacts with all the backend data
+#Description: This file creates the Dashboard and its components and interacts with all the backend data
 
 from dash import Dash, html, dcc, dash_table
 from dash_table.Format import Format
