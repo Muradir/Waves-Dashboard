@@ -16,22 +16,23 @@ from database import Database
 class CreateDataFrames:
 
     def start(self):
-        self.getDataframeByChoice('Bitcoin')
-        self.getDataframeByChoice('Ethereum')
-        self.getDataframeByChoice('Waves')
-        self.getDataframeByChoice('Usd')
-        self.getDataframeByChoice('Converter')
+        self.__getDataframeByChoice('Bitcoin')
+        self.__getDataframeByChoice('Ethereum')
+        self.__getDataframeByChoice('Waves')
+        self.__getDataframeByChoice('Usd')
+        self.__getDataframeByChoice('Converter')
+        self.__getDataframeByChoice('Crypto')
 
     def __getDataframeByChoice(self, currency: str):
         # Creating empty list.
         SQL = []  # set an empty list
         # Get data from SQL database.
         rows = Database().executeSelectQuery(
-            tableName=self.getTableName(currency=currency))
+            tableName=self.__getTableName(currency=currency))
         # Pass the collected data from SQL database to the list.
         for row in rows:
             SQL.append(list(row))
-            labels = self.getLabelsByChoice(currency=currency)
+            labels = self.__getLabelsByChoice(currency=currency)
             # Transfer the collected data to the dataframe.
             df = pd.DataFrame.from_records(SQL, columns=labels)
         # Format the dataframe accordingly for subsequent use in the graph.
@@ -45,6 +46,14 @@ class CreateDataFrames:
             df['WAVES'] = df['WAVES'].apply(pd.to_numeric)
             df['SP500'] = df['SP500'].apply(pd.to_numeric)
             df['Date'] = df['Date'].apply(pd.to_datetime)
+        elif currency == 'Crypto':
+            df['Total'] = df['Total'].apply(pd.to_numeric)
+            df['Transactions24h'] = df['Transactions24h'].apply(pd.to_numeric)
+            df['Fee'] = df['Fee'].apply(pd.to_numeric)
+            df['PriceChangePercentage24h'] = df['PriceChangePercentage24h'].apply(pd.to_numeric)
+            df['MarketDominancePercentage'] = df['MarketDominancePercentage'].apply(pd.to_numeric)
+            df['Currency'] = df['Currency']
+            df['Date'] = df['Date'].apply(pd.to_datetime)
         else:
             df[labels[2]] = df[labels[2]].apply(pd.to_numeric)
             df[labels[1]] = df[labels[1]].apply(pd.to_numeric)
@@ -56,7 +65,7 @@ class CreateDataFrames:
 
     def __getLabelsByChoice(self, currency):
         allLabels = ['Date', 'BTC', 'ETH', 'WAVES',
-                     'SP500', 'USD', 'Fee', 'Currency']
+                     'SP500', 'USD', 'Fee', 'Currency', 'Total', 'Transactions24h', 'PriceChangePercentage24h', 'MarketDominancePercentage']
         specLabel = []
         if currency == 'Bitcoin':
             specLabel.append(allLabels[0])
@@ -81,37 +90,20 @@ class CreateDataFrames:
             specLabel.append(allLabels[5])
             specLabel.append(allLabels[6])
             specLabel.append(allLabels[7])
+        elif currency == 'Crypto':
+            specLabel.append(allLabels[0])
+            specLabel.append(allLabels[8])
+            specLabel.append(allLabels[9])
+            specLabel.append(allLabels[6])
+            specLabel.append(allLabels[10])
+            specLabel.append(allLabels[11])
+            specLabel.append(allLabels[7])
         return specLabel
 
-<<<<<<< HEAD
-        dfcurrency.to_pickle("./backend_app/data_stores/dfcurrency")
-        print("Currency Data successfully saved to Dataframe: dfcurrency")
-
-    def getDataframeDetails():
-        # Erzeuge eine leere Liste.
-        DetailsSQL = []
-        # Rufe Daten aus der SQL per Select Befehl ab.
-        rows = Database().executeSelectQuery(tableName='report_cryptoDetails')
-        # Übergebe die gesammelten Daten aus der SQL an die Liste.
-        for row in rows:
-            DetailsSQL.append(list(row))
-            labels = ['Date', 'TransactionsTotal', 'Transactions24h', 'Fee', 'PriceChange24h', 'MarketDominance', 'Currency']
-            # Übertrage die gesammelten Daten an den Dataframe.
-            dfdetails = pd.DataFrame.from_records(DetailsSQL, columns=labels)
-        # Formatier den Dataframe entsprechend für die anschließende Nutzung im Graphen.
-        dfdetails['TransactionsTotal'] = dfdetails['TransactionsTotal'].apply(pd.to_numeric)
-        dfdetails['Transactions24h'] = dfdetails['Transactions24h'].apply(pd.to_numeric)
-        dfdetails['Fee'] = dfdetails['Fee'].apply(pd.to_numeric)
-        dfdetails['PriceChange24h'] = dfdetails['PriceChange24h'].apply(pd.to_numeric)
-        dfdetails['MarketDominance'] = dfdetails['MarketDominance'].apply(pd.to_numeric)
-        dfdetails['Date'] = dfdetails['Date'].apply(pd.to_datetime)
-
-        dfdetails.to_pickle("./backend_app/data_stores/dfdetails")
-        print("Detailed Data successfully saved to Dataframe: dfdetails")
-=======
     def __getTableName(self, currency: str):
         if currency == 'Converter':
             return 'report_currencyConverter'
+        elif currency == 'Crypto':
+            return 'report_cryptoDetails'
         else:
             return 'report_marketPricesIn' + currency
->>>>>>> e1a71ce3712230ff80e09a78121c0d8a1850dae3
